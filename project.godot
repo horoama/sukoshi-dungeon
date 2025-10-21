@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="tiny-dungeon"
+config/name="sukoshi-dungeon"
 run/main_scene="uid://bk5cacv8k1o37"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
