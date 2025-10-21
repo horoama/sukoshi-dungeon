@@ -144,7 +144,7 @@ script = ExtResource("1_c4wp1")
 tile_map = NodePath("DungeonMap/Map")
 
 [node name="DungeonMap" type="Node2D" parent="."]
-scale = Vector2(3, 3)
+scale = Vector2(1.75, 1.75)
 
 [node name="Map" type="TileMapLayer" parent="DungeonMap"]
 tile_set = SubResource("TileSet_fpimf")
