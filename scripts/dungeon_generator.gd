@@ -1,23 +1,29 @@
 extends Node
 
+# タイルマップレイヤーへの参照
 @export var tile_map: TileMapLayer
-@export var map_width: int = 24
-@export var map_height: int = 19
+# マップの幅
+@export var map_width: int = 43
+# マップの高さ
+@export var map_height: int = 33
 
-# store generated data and tile lists as plain Arrays to avoid nested typed collections
+# 生成されたデータを格納する配列
 var tile_map_data: Array = []
+# タイルセットの辞書。タイル名とタイルセット内の座標をマッピング
 var tileset_dict: Dictionary = {
-    "FLOOR": Vector2i(0, 0),
-    "WALL": Vector2i(0, 1),
+    "FLOOR": Vector2i(0, 0), # 床タイル
+    "WALL": Vector2i(0, 1),  # 壁タイル
+    "DOWN_STAIRS": Vector2i(7, 16), # 階段タイル
 }
 
 func _ready() -> void:
-    var wall_rate = 0.45
-    var simulation_steps = 5
-    var room_attempts = 3
-    var room_min_size = 3
-    var room_max_size = 6
-    init_grid()
+    var wall_rate = 0.45 # 壁の割合
+    var simulation_steps = 3 # シミュレーションのステップ数
+    var room_attempts = 3 # 部屋の生成試行回数
+    var room_min_size = 3 # 部屋の最小サイズ
+    var room_max_size = 6 # 部屋の最大サイズ
+    init_grid() # グリッドの初期化
+    # 洞窟を生成
     tile_map_data = generate_cave(
         map_width,
         map_height,
@@ -27,87 +33,112 @@ func _ready() -> void:
         room_min_size,
         room_max_size
     )
-    update_tile_map()
+    update_tile_map() # タイルマップを更新
 
+# グリッドを壁で初期化する関数
 func init_grid():
-    # WALLで初期化
+    # マップ全体を壁で埋める
     tile_map_data = ArrayUtils.create_2d_array(map_width, map_height, tileset_dict["WALL"])
 
+# tile_map_dataに基づいてタイルマップを更新する関数
 func update_tile_map() -> void:
     for y in range(tile_map_data.size()):
         for x in range(tile_map_data[y].size()):
             var tile_type = tile_map_data[y][x]
             tile_map.set_cell(Vector2i(x, y), 0, tile_type)
 
-# Generate dungeon map
+# ダンジョンマップを生成する関数
 func generate_dungeon(width: int, height: int, wall_rate: float) -> Array:
     var map_data: Array = []
     for y in range(height):
         map_data.append([])
         for x in range(width):
+            # wall_rateの確率で壁を配置
             if randf() < wall_rate:
                 map_data[y].append(tileset_dict["WALL"])
             else:
                 map_data[y].append(tileset_dict["FLOOR"])
     return map_data
 
+# 指定された座標の周囲8方向の壁の数を数える関数
 func count_walls_around(map_data: Array, x: int, y: int) -> int:
     var wall_count: int = 0
-    # count walls in 8 directions
+    # 8方向の隣接セルをチェック
     for dy in [-1, 0, 1]:
         for dx in [-1, 0, 1]:
             if dx == 0 and dy == 0:
                 continue
             var nx = x + dx
             var ny = y + dy
+            # マップの範囲内かチェック
             if nx >= 0 and nx < map_data[0].size() and ny >= 0 and ny < map_data.size():
                  if map_data[ny][nx] == tileset_dict["WALL"]:
                       wall_count += 1
     return wall_count
+
+# セルオートマトンのシミュレーションを1ステップ実行する関数
 func do_simulation_step(map_data: Array) -> Array:
     var new_map_data: Array = []
     for y in range(map_data.size()):
         new_map_data.append([])
         for x in range(map_data[y].size()):
             var wall_count = count_walls_around(map_data, x, y)
+            # 現在のセルが壁の場合
             if map_data[y][x] == tileset_dict["WALL"]:
+                # 周囲の壁が4未満なら床に変更
                 if wall_count < 4:
                     new_map_data[y].append(tileset_dict["FLOOR"])
                 else:
                     new_map_data[y].append(tileset_dict["WALL"])
+            # 現在のセルが床の場合
             else:
+                # 周囲の壁が5以上なら壁に変更
                 if wall_count >= 5:
                     new_map_data[y].append(tileset_dict["WALL"])
                 else:
                     new_map_data[y].append(tileset_dict["FLOOR"])
     return new_map_data
 
+# 指定された位置に部屋を配置する関数
 func place_room(map_data: Array, room_x: int, room_y: int, room_width: int, room_height: int) -> void:
     for y in range(room_y, room_y + room_height):
         for x in range(room_x, room_x + room_width):
+            # マップの範囲内かチェック
             if x >= 0 and x < map_data[0].size() and y >= 0 and y < map_data.size():
                 map_data[y][x] = tileset_dict["FLOOR"]
 
+# 水平方向の通路を作成する関数
 func carve_h_corridor(map_data: Array, x1: int, x2: int, y: int) -> void:
     for x in range(min(x1, x2), max(x1, x2) + 1):
+        # マップの範囲内かチェック
         if x >= 0 and x < map_data[0].size() and y >= 0 and y < map_data.size():
             map_data[y][x] = tileset_dict["FLOOR"]
 
+# 垂直方向の通路を作成する関数
 func carve_v_corridor(map_data: Array, y1: int, y2: int, x: int) -> void:
     for y in range(min(y1, y2), max(y1, y2) + 1):
+        # マップの範囲内かチェック
         if x >= 0 and x < map_data[0].size() and y >= 0 and y < map_data.size():
             map_data[y][x] = tileset_dict["FLOOR"]
 
-func generate_rooms_and_corridors(map_data: Array, room_count: int, room_min_size: int, room_max_size: int) -> Array:
-    map_data = ArrayUtils.create_2d_array(map_width, map_height, tileset_dict["WALL"])
+# 部屋と通路を生成する関数
+# rooom_count: 生成する部屋の数
+# room_min_size: 部屋の最小サイズ
+# room_max_size: 部屋の最大サイズ
+func generate_rooms_and_corridors(room_count: int, room_min_size: int, room_max_size: int) -> Array:
+    # マップを壁で初期化
+    var map_data = ArrayUtils.create_2d_array(map_width, map_height, tileset_dict["WALL"])
     var rooms: Array = []
     for i in range(room_count):
+        # ランダムなサイズの部屋を生成
         var room_width = randi() % (room_max_size - room_min_size + 1) + room_min_size
         var room_height = randi() % (room_max_size - room_min_size + 1) + room_min_size
+        # ランダムな位置に部屋を配置
         var room_x = randi_range(1, map_data[0].size() - room_width)
         var room_y = randi_range(1, map_data.size() - room_height)
         var new_room = [room_x, room_y, room_width, room_height]
         var overlaps = false
+        # 他の部屋と重なっていないかチェック
         for other_room in rooms:
             var ox = other_room[0]
             var oy = other_room[1]
@@ -117,14 +148,17 @@ func generate_rooms_and_corridors(map_data: Array, room_count: int, room_min_siz
                 room_y < oy + oh and room_y + room_height > oy):
                 overlaps = true
                 break
+        # 重なっていなければ部屋を配置し、前の部屋と通路で接続
         if not overlaps:
             place_room(map_data, room_x, room_y, room_width, room_height)
             if rooms.size() > 0:
                 var prev_room = rooms[rooms.size() - 1]
                 var prev_cx = prev_room[0] + prev_room[2] / 2
                 var prev_cy = prev_room[1] + prev_room[3] / 2
+                #warning-ignore:integer_division
                 var cur_cx = room_x + room_width / 2
                 var cur_cy = room_y + room_height / 2
+                # ランダムに水平・垂直の通路を生成
                 if randi() % 2 == 0:
                     carve_h_corridor(map_data, prev_cx, cur_cx, prev_cy)
                     carve_v_corridor(map_data, prev_cy, cur_cy, cur_cx)
@@ -134,7 +168,22 @@ func generate_rooms_and_corridors(map_data: Array, room_count: int, room_min_siz
             rooms.append(new_room)
     return map_data
 
+# 指定された座標の隣接セル（縦横方向）を取得する関数
+func get_neighbors(x: int, y: int, width: int, height: int) -> Array:
+    var neighbors: Array = []
+    for dy in [-1, 0, 1]:
+        for dx in [-1, 0, 1]:
+            # 斜め方向は除外
+            if abs(dx) == abs(dy):
+                continue
+            var nx = x + dx
+            var ny = y + dy
+            # マップの範囲内かチェック
+            if nx >= 0 and nx < width and ny >= 0 and ny < height:
+                neighbors.append([nx, ny])
+    return neighbors
 
+# 洞窟を生成するメイン関数
 func generate_cave(
     width: int,
     height: int,
@@ -144,24 +193,43 @@ func generate_cave(
     room_min_size: int,
     room_max_size: int,
     ) -> Array:
-    var map_data: Array = []
-    # Initial random fill
+    # 部屋と通路の初期生成
     var cave = generate_rooms_and_corridors(
-        map_data,
         room_attempts,
         room_min_size,
         room_max_size
     )
-    for y in range(height-1):
-        for x in range(width-1):
+    
+    # マップの外周を壁で囲む
+    for x in range(width):
+        cave[0][x] = tileset_dict["WALL"]          # 最上部の壁
+        cave[height-1][x] = tileset_dict["WALL"]   # 最下部の壁
+    for y in range(height):
+        cave[y][0] = tileset_dict["WALL"]          # 左端の壁
+        cave[y][width-1] = tileset_dict["WALL"]    # 右端の壁
+    
+    # 内部領域のみランダムに地形を生成
+    for y in range(1, height-1):
+        for x in range(1, width-1):
             if randf() < wall_rate:
-                cave[y][x] = tileset_dict["WALL"]
+                cave[y][x] = tileset_dict["WALL"]   # wall_rateの確率で壁を配置
             else:
-                cave[y][x] = tileset_dict["FLOOR"]
+                cave[y][x] = tileset_dict["FLOOR"]  # それ以外は床を配置
+                
+    # セルオートマトンによる地形の洗練化
     for step in range(simulation_steps):
         cave = do_simulation_step(cave)
+        # シミュレーションの各ステップ後に外周の壁を再設定
+        for x in range(width):
+            cave[0][x] = tileset_dict["WALL"]
+            cave[height-1][x] = tileset_dict["WALL"]
+        for y in range(height):
+            cave[y][0] = tileset_dict["WALL"]
+            cave[y][width-1] = tileset_dict["WALL"]
+    
+    # 内部領域の総タイル数を計算
     var total = (width - 2) * (height - 2)
-    # count wall cells
+    # 内部の壁の位置を記録
     var wall_cells = []
     for y in range(1, height - 1):
         for x in range(1, width - 1):
@@ -169,22 +237,55 @@ func generate_cave(
                 wall_cells.append(Vector2i(x, y))
     var wall_count = wall_cells.size()
     var max_wall = total * wall_rate
+    # 壁が多すぎる場合、ランダムに壁を床に変換
     if wall_count > max_wall:
-        # random room placement
         var to_remove = wall_count - max_wall
         while to_remove > 0:
             var index = randi() % wall_cells.size()
             var cell = wall_cells[index]
-            map_data[cell.y][cell.x] = tileset_dict["FLOOR"]
+            cave[cell.y][cell.x] = tileset_dict["FLOOR"]
             wall_cells.remove_at(index)
             to_remove -= 1
-    # すべての部屋を通路で接続
-    # 外周をWALLで囲む
-    for x in range(width):
-        cave[0][x] = tileset_dict["WALL"]
-        cave[height - 1][x] = tileset_dict["WALL"]
-    for y in range(height):
-        cave[y][0] = tileset_dict["WALL"]
-        cave[y][width - 1] = tileset_dict["WALL"]
+            
+    # 連結成分を検出し、分断されている場合は通路で接続
+    var visited = ArrayUtils.create_2d_array(width, height, false)
+    var components: Array = []
+    for y in range(1, height - 1):
+        for x in range(1, width - 1):
+            if cave[y][x] == tileset_dict["FLOOR"] and not visited[y][x]:
+                var stack: Array = [Vector2i(x, y)]
+                var component: Array = []
+                while stack.size() > 0:
+                    var cell = stack.pop_back()
+                    if visited[cell.y][cell.x]:
+                        continue
+                    visited[cell.y][cell.x] = true
+                    component.append(cell)
+                    var neighbors = get_neighbors(cell.x, cell.y, width, height)
+                    for n in neighbors:
+                        if cave[n[1]][n[0]] == tileset_dict["FLOOR"] and not visited[n[1]][n[0]]:
+                            stack.append(Vector2i(n[0], n[1]))
+                components.append(component)
+                
+    # 連結成分が複数ある場合、それらを接続
+    if components.size() > 1:
+        var main_comp = components[0]
+        for comp in components.slice(1, components.size()):
+            # 各連結成分の代表点同士を最短で接続
+            var min_dist = 1e9
+            var best_a: Vector2i
+            var best_b: Vector2i
+            for a in main_comp:
+                for b in comp:
+                    var dist = a.distance_to(b)
+                    if dist < min_dist:
+                        min_dist = dist
+                        best_a = a
+                        best_b = b
+            # 最短距離の2点間に通路を生成
+            carve_h_corridor(cave, best_a.x, best_b.x, best_a.y)
+            carve_v_corridor(cave, best_a.y, best_b.y, best_b.x)
+            main_comp += comp
+        
     return cave
     

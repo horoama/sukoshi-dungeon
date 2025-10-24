@@ -10,11 +10,24 @@ static func create_2d_array(width: int, height: int, default_value: Variant) -> 
         array.append(row)
     return array
 
-# 値のセットと取得
-static func set_2d_array_value(array: Array, x: int, y: int, value: Variant) -> void:
-    if y >= 0 and y < array.size() and x >= 0 and x < array[y].size():
-        array[y][x] = value
-static func get_2d_array_value(array: Array, x: int, y: int) -> Variant:
-    if y >= 0 and y < array.size() and x >= 0 and x < array[y].size():
-        return array[y][x]
-    return null
+# 便利な関数たち
+static func print_2d_array(array: Array) -> void:
+    for row in array:
+        var row_str = ""
+        for item in row:
+            row_str += str(item) + " "
+        print(row_str)
+
+static func fill_2d_array(array: Array, value: Variant) -> void:
+    for y in range(array.size()):
+        for x in range(array[y].size()):
+            array[y][x] = value
+
+static func copy_2d_array(array: Array) -> Array:
+    var new_array: Array = []
+    for row in array:
+        var new_row: Array = []
+        for item in row:
+            new_row.append(item)
+        new_array.append(new_row)
+    return new_array
