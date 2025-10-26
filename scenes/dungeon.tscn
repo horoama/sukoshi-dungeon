@@ -1,5 +1,6 @@
-[gd_scene load_steps=12 format=4 uid="uid://yibjcjia6bm0"]
+[gd_scene load_steps=13 format=4 uid="uid://yibjcjia6bm0"]
 
+[ext_resource type="Script" uid="uid://bppcr8dio1s8y" path="res://scripts/dungeon.gd" id="1_0wj4k"]
 [ext_resource type="Script" uid="uid://boftldsulovox" path="res://scripts/dungeon_generator.gd" id="1_c4wp1"]
 [ext_resource type="Texture2D" uid="uid://k45bcaup6j74" path="res://assets/sprites/tiles.png" id="1_ubp1v"]
 [ext_resource type="Texture2D" uid="uid://bmd5efsdnfw68" path="res://assets/sprites/items.png" id="3_fpimf"]
@@ -969,8 +970,11 @@ tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_ys5p8")
 
 [node name="Dungeon" type="Node" node_paths=PackedStringArray("tile_map")]
-script = ExtResource("1_c4wp1")
+script = ExtResource("1_0wj4k")
 tile_map = NodePath("DungeonMap/Map")
+
+[node name="DungeonGenerator" type="Node" parent="."]
+script = ExtResource("1_c4wp1")
 
 [node name="DungeonMap" type="Node2D" parent="."]
 position = Vector2(24, 40)
@@ -988,3 +992,31 @@ tile_set = SubResource("TileSet_fvacq")
 
 [node name="Item" type="TileMapLayer" parent="DungeonMap"]
 tile_set = SubResource("TileSet_hsn05")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = -1
+anchor_left = 0.85200006
+anchor_top = 0.504
+anchor_right = 0.85200006
+anchor_bottom = 0.504
+offset_left = -283.8401
+offset_top = -544.32
+offset_right = 284.1599
+offset_bottom = 543.68
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button" type="Button" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.46500003
+anchor_top = 0.19900002
+anchor_right = 0.46500003
+anchor_bottom = 0.19900002
+offset_left = -72.120026
+offset_top = -40.512024
+offset_right = 71.879974
+offset_bottom = 39.487976
+text = "Generate"
+
+[connection signal="pressed" from="Panel/Button" to="." method="_on_button_pressed"]
