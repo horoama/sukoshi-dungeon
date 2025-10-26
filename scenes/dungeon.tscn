@@ -968,8 +968,9 @@ texture = ExtResource("3_fpimf")
 tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_ys5p8")
 
-[node name="Dungeon" type="Node"]
+[node name="Dungeon" type="Node" node_paths=PackedStringArray("tile_map")]
 script = ExtResource("1_c4wp1")
+tile_map = NodePath("DungeonMap/Map")
 
 [node name="DungeonMap" type="Node2D" parent="."]
 position = Vector2(24, 40)
