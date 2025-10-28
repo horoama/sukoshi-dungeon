@@ -6,27 +6,15 @@ extends Node
 # マップの高さ
 @export var map_height: int = 30
 
-var wall_rate = 0.45 # 壁の割合
-var simulation_steps = 3 # シミュレーションのステップ数
-var room_attempts = 3 # 部屋の生成試行回数
-var room_min_size = 3 # 部屋の最小サイズ
-var room_max_size = 6 # 部屋の最大サイズ
+const WALL_RATE = 0.45 # 壁の割合
+const SIMULATION_STEPS = 3 # シミュレーションのステップ数
+const ROOM_ATTEMPTS = 3 # 部屋の生成試行回数
+const ROOM_MIN_SIZE = 3 # 部屋の最小サイズ
+const ROOM_MAX_SIZE = 6 # 部屋の最大サイズ
 
 func _ready() -> void:
     pass
 
-# ダンジョンマップを生成する関数
-func generate_dungeon(width: int, height: int, wall_rate: float) -> Array:
-    var map: Array = []
-    for y in range(height):
-        map.append([])
-        for x in range(width):
-            # wall_rateの確率で壁を配置
-            if randf() < wall_rate:
-                map[y].append(Tile.WALL)
-            else:
-                map[y].append(Tile.FLOOR)
-    return map
 
 # 指定された座標の周囲8方向の壁の数を数える関数
 func count_walls_around(map: MapData, x: int, y: int) -> int:
@@ -55,16 +43,16 @@ func do_simulation_step(map: MapData) -> MapData:
                 # 周囲の壁が4未満なら床に変更
                 if wall_count < 4:
                     #new_map_data[y].append(Tile.FLOOR)
-                    new_map_data.set_tile_type(x, y, Tile.FLOOR)
+                    new_map_data.change_tile_type(x, y, Tile.FLOOR)
                 else:
-                    new_map_data.set_tile_type(x, y, Tile.WALL)
+                    new_map_data.change_tile_type(x, y, Tile.WALL)
             # 現在のセルが床の場合
             else:
                 # 周囲の壁が5以上なら壁に変更
                 if wall_count >= 5:
-                    new_map_data.set_tile_type(x, y, Tile.WALL)
+                    new_map_data.change_tile_type(x, y, Tile.WALL)
                 else:
-                    new_map_data.set_tile_type(x, y, Tile.FLOOR)
+                    new_map_data.change_tile_type(x, y, Tile.FLOOR)
     return new_map_data
 
 # 指定された位置に部屋を配置する関数
@@ -177,30 +165,30 @@ func generate_cave(
     # マップの外周を壁で囲む
     for x in range(width):
         #cave[0][x] = Tile.WALL          # 最上部の壁
-        cave.set_tile_type(x, 0, Tile.WALL)
-        cave.set_tile_type(x, height-1, Tile.WALL)
+        cave.change_tile_type(x, 0, Tile.WALL)
+        cave.change_tile_type(x, height-1, Tile.WALL)
     for y in range(height):
-        cave.set_tile_type(0, y, Tile.WALL)
-        cave.set_tile_type(width-1, y, Tile.WALL)
+        cave.change_tile_type(0, y, Tile.WALL)
+        cave.change_tile_type(width-1, y, Tile.WALL)
 
     # 内部領域のみランダムに地形を生成
     for y in range(1, height-1):
         for x in range(1, width-1):
             if randf() < wall_rate:
-                cave.set_tile_type(x, y, Tile.WALL)   # wall_rateの確率で壁を配置
+                cave.change_tile_type(x, y, Tile.WALL)   # wall_rateの確率で壁を配置
             else:
-                cave.set_tile_type(x, y, Tile.FLOOR)  # それ以外は床を配置
+                cave.change_tile_type(x, y, Tile.FLOOR)  # それ以外は床を配置
 
     # セルオートマトンによる地形の洗練化
     for step in range(simulation_steps):
         cave = do_simulation_step(cave)
         # シミュレーションの各ステップ後に外周の壁を再設定
         for x in range(width):
-            cave.set_tile_type(x, 0, Tile.WALL)
-            cave.set_tile_type(x, height-1, Tile.WALL)
+            cave.change_tile_type(x, 0, Tile.WALL)
+            cave.change_tile_type(x, height-1, Tile.WALL)
         for y in range(height):
-            cave.set_tile_type(0, y, Tile.WALL)
-            cave.set_tile_type(width-1, y, Tile.WALL)
+            cave.change_tile_type(0, y, Tile.WALL)
+            cave.change_tile_type(width-1, y, Tile.WALL)
     
     # 内部領域の総タイル数を計算
     var total = (width - 2) * (height - 2)
@@ -218,7 +206,7 @@ func generate_cave(
         while to_remove > 0:
             var index = randi() % wall_cells.size()
             var cell = wall_cells[index]
-            cave.set_tile_type(cell.x, cell.y, Tile.FLOOR)
+            cave.change_tile_type(cell.x, cell.y, Tile.FLOOR)
             wall_cells.remove_at(index)
             to_remove -= 1
             
@@ -271,3 +259,22 @@ func generate_cave(
             main_comp += comp
         
     return cave
+
+
+# After generate map
+## set stair tiles, etc.
+func finalize_map(map_data: MapData) -> MapData:
+    # ここに最終的なマップ調整のコードを追加
+    set_stairs(map_data, 1)
+    return map_data
+
+func set_stairs(map_data: MapData, number: int) -> void:
+    # 階段を設置するコードを追加
+    var empty_tiles = []
+    for tile in map_data.tiles:
+        if tile.atlas_coords == Tile.FLOOR:
+            empty_tiles.append(tile)
+    empty_tiles.shuffle()
+    for i in range(min(number, empty_tiles.size())):
+        var tile = empty_tiles[i]
+        tile.set_object_type(Tile.DOWN_STAIRS)

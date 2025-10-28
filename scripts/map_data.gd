@@ -36,7 +36,7 @@ func set_tile(x: int, y: int, tile: Tile) -> void:
 		tiles[index] = tile
 	map_updated.emit()
 
-func set_tile_type(x: int, y: int, tile_type: Vector2i) -> void:
+func change_tile_type(x: int, y: int, tile_type: Vector2i) -> void:
 	var tile = get_tile_xy(x, y)
 	if tile:
 		tile.set_type(tile_type)
