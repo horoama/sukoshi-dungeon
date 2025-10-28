@@ -27,7 +27,7 @@ func _ready() -> void:
 func update_tile_map(map_data: MapData) -> void:
     for i in map_data.tiles.size():
         var grid_pos = map_data.index_to_grid(i)
-        terrain_tile_map.set_cell(grid_pos, 0, map_data.get_tile(grid_pos).atlas_coords) 
+        terrain_tile_map.set_cell(grid_pos, 0, map_data.get_tile(grid_pos).terrain_atlas_coords) 
         # オブジェクトタイルの更新
-        if map_data.get_tile(grid_pos).object_atlas_coords == Tile.DOWN_STAIRS:
+        if map_data.get_tile(grid_pos).type == "down_stairs":
             object_tile_map.set_cell(grid_pos, 1, map_data.get_tile(grid_pos).object_atlas_coords)

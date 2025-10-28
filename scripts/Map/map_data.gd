@@ -10,15 +10,15 @@ func _init(map_width: int, map_height: int) -> void:
 	tiles = []
 	self.width = map_width
 	self.height = map_height
-	fill_map(Tile.WALL)
+	fill_map("FLOOR")
 	# signal emit
 	map_updated.emit()
 
-func fill_map(tile_type: Vector2i) -> void:
+func fill_map(tile_code: String) -> void:
 	tiles.clear()
 	for y in range(height):
 		for x in range(width):
-			var tile = Tile.new(Vector2i(x, y), tile_type)
+			var tile = Tile.new(Vector2i(x, y), tile_code)
 			tiles.append(tile)
 
 func get_tile_xy(x: int, y: int) -> Tile:
@@ -36,10 +36,10 @@ func set_tile(x: int, y: int, tile: Tile) -> void:
 		tiles[index] = tile
 	map_updated.emit()
 
-func change_tile_type(x: int, y: int, tile_type: Vector2i) -> void:
+func change_tile_type(x: int, y: int, tile_code: String) -> void:
 	var tile = get_tile_xy(x, y)
 	if tile:
-		tile.set_type(tile_type)
+		tile.set_terrain_type(tile_code)
 	map_updated.emit()
 
 func grid_to_index(grid_pos: Vector2i) -> int:

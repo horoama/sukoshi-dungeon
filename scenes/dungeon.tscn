@@ -1,7 +1,7 @@
 [gd_scene load_steps=11 format=3 uid="uid://yibjcjia6bm0"]
 
 [ext_resource type="Script" uid="uid://bppcr8dio1s8y" path="res://scripts/dungeon.gd" id="1_0wj4k"]
-[ext_resource type="Script" uid="uid://boftldsulovox" path="res://scripts/dungeon_generator.gd" id="1_c4wp1"]
+[ext_resource type="Script" uid="uid://boftldsulovox" path="res://scripts/Map/dungeon_generator.gd" id="1_c4wp1"]
 [ext_resource type="Texture2D" uid="uid://k45bcaup6j74" path="res://assets/sprites/tiles.png" id="1_ubp1v"]
 [ext_resource type="Texture2D" uid="uid://bmd5efsdnfw68" path="res://assets/sprites/items.png" id="3_fpimf"]
 
