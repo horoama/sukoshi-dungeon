@@ -1,16 +1,8 @@
 class_name DungeonGenerator
 extends Node
 
-# マップの幅
-@export var map_width: int = 40
-# マップの高さ
-@export var map_height: int = 30
 
-const WALL_RATE = 0.45 # 壁の割合
-const SIMULATION_STEPS = 3 # シミュレーションのステップ数
-const ROOM_ATTEMPTS = 3 # 部屋の生成試行回数
-const ROOM_MIN_SIZE = 3 # 部屋の最小サイズ
-const ROOM_MAX_SIZE = 6 # 部屋の最大サイズ
+
 
 func _ready() -> void:
     pass
@@ -28,7 +20,7 @@ func count_walls_around(map: MapData, x: int, y: int) -> int:
             var ny = y + dy
             # マップの範囲内かチェック
             if nx >= 0 and nx < map.width and ny >= 0 and ny < map.height:
-                if map.get_tile_xy(nx, ny).type == "WALL":
+                if map.get_tile_xy(nx, ny).terrain_type == "WALL":
                     wall_count += 1
     return wall_count
 
@@ -39,7 +31,7 @@ func do_simulation_step(map: MapData) -> MapData:
         for x in range(map.width):
             var wall_count = count_walls_around(map, x, y)
             # 現在のセルが壁の場合
-            if map.get_tile_xy(x, y).type == "WALL":
+            if map.get_tile_xy(x, y).terrain_type == "WALL":
                 # 周囲の壁が4未満なら床に変更
                 if wall_count < 4:
                     #new_map_data[y].append(Tile.FLOOR)
@@ -142,61 +134,52 @@ func get_neighbors(x: int, y: int, width: int, height: int) -> Array:
     return neighbors
 
 # 洞窟を生成するメイン関数
-func generate_cave(
-    width: int,
-    height: int,
-    wall_rate: float,
-    simulation_steps: int,
-    room_attempts: int,
-    room_min_size: int,
-    room_max_size: int,
-    ) -> MapData:
+func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
     # 部屋と通路の初期生成
     var cave : MapData = generate_rooms_and_corridors(
-        MapData.new(width, height),
-        room_attempts,
-        room_min_size,
-        room_max_size
+        MapData.new(config.map_width, config.map_height),
+        config.room_attempts,
+        config.room_min_size,
+        config.room_max_size
     )
     
     # マップの外周を壁で囲む
-    for x in range(width):
-        #cave[0][x] = Tile.WALL          # 最上部の壁
-        cave.change_terrain_tile_type(x, 0, "WALL")
-        cave.change_terrain_tile_type(x, height-1, "WALL")
-    for y in range(height):
+    for x in range(config.map_width):
+        cave.change_terrain_tile_type(x, 0, "WALL")          # 最上部の壁
+        cave.change_terrain_tile_type(x, config.map_height-1, "WALL")
+    for y in range(config.map_height):
         cave.change_terrain_tile_type(0, y, "WALL")
-        cave.change_terrain_tile_type(width-1, y, "WALL")
+        cave.change_terrain_tile_type(config.map_width-1, y, "WALL")
 
     # 内部領域のみランダムに地形を生成
-    for y in range(1, height-1):
-        for x in range(1, width-1):
-            if randf() < wall_rate:
+    for y in range(1, config.map_height-1):
+        for x in range(1, config.map_width-1):
+            if randf() < config.wall_rate:
                 cave.change_terrain_tile_type(x, y, "WALL")  # 一定確率で壁を配置
             else:
                 cave.change_terrain_tile_type(x, y, "FLOOR")  # それ以外は床を配置
 
     # セルオートマトンによる地形の洗練化
-    for step in range(simulation_steps):
+    for step in range(config.simulation_steps):
         cave = do_simulation_step(cave)
         # シミュレーションの各ステップ後に外周の壁を再設定
-        for x in range(width):
+        for x in range(config.map_width):
             cave.change_terrain_tile_type(x, 0, "WALL")
-            cave.change_terrain_tile_type(x, height-1, "WALL")
-        for y in range(height):
+            cave.change_terrain_tile_type(x, config.map_height-1, "WALL")
+        for y in range(config.map_height):
             cave.change_terrain_tile_type(0, y, "WALL")
-            cave.change_terrain_tile_type(width-1, y, "WALL")
+            cave.change_terrain_tile_type(config.map_width-1, y, "WALL")
     
     # 内部領域の総タイル数を計算
-    var total = (width - 2) * (height - 2)
+    var total = (config.map_width - 2) * (config.map_height - 2)
     # 内部の壁の位置を記録
     var wall_cells = []
-    for y in range(1, height - 1):
-        for x in range(1, width - 1):
-            if cave.get_tile_xy(x, y).type == "WALL":
+    for y in range(1, config.map_height - 1):
+        for x in range(1, config.map_width - 1):
+            if cave.get_tile_xy(x, y).terrain_type == "WALL":
                 wall_cells.append(Vector2i(x, y))
     var wall_count = wall_cells.size()
-    var max_wall = total * wall_rate
+    var max_wall = total * config.wall_rate
     # 壁が多すぎる場合、ランダムに壁を床に変換
     if wall_count > max_wall:
         var to_remove = wall_count - max_wall
@@ -206,14 +189,26 @@ func generate_cave(
             cave.change_terrain_tile_type(cell.x, cell.y, "FLOOR")
             wall_cells.remove_at(index)
             to_remove -= 1
+    # prev_map がある場合はそのDOWN_STAIRSを探す
+    # その座標と同じ場所にUP_STAIRSを配置
+    if prev_map != null:
+        for tile in prev_map.tiles:
+            if tile.object_type == "DOWN_STAIRS":
+                # 階段を設置する
+                cave.change_object_tile_type(tile.position.x, tile.position.y, "UP_STAIRS")
+                cave.change_terrain_tile_type(tile.position.x, tile.position.y, "FLOOR")
+                # 周りのタイルに床に変更(外周を除く)
+                var neighbors = get_neighbors(tile.position.x, tile.position.y, config.map_width, config.map_height)
+                for n in neighbors:
+                    cave.change_terrain_tile_type(n[0], n[1], "FLOOR")
             
     # 連結成分を検出し、分断されている場合は通路で接続
-    var visited = ArrayUtils.create_2d_array(width, height, false)
+    var visited = ArrayUtils.create_2d_array(config.map_width, config.map_height, false)
     var components: Array = []
-    for y in range(1, height - 1):
-        for x in range(1, width - 1):
+    for y in range(1, config.map_height - 1):
+        for x in range(1, config.map_width - 1):
             # まだ訪れていない床タイルから探索を開始
-            if cave.get_tile_xy(x, y).type == "FLOOR" and not visited[x][y]:
+            if cave.get_tile_xy(x, y).terrain_type == "FLOOR" and not visited[x][y]:
                 # 深さ優先探索で連結成分を収集
                 var stack: Array = [Vector2i(x, y)]
                 # 収集したタイルのリスト
@@ -229,9 +224,9 @@ func generate_cave(
                     visited[cell.x][cell.y] = true
                     component.append(cell)
                     # 隣接セルをチェックし、床タイルで未訪問のものをスタックに追加
-                    var neighbors = get_neighbors(cell.x, cell.y, width, height)
+                    var neighbors = get_neighbors(cell.x, cell.y, config.map_width, config.map_height)
                     for n in neighbors:
-                        if cave.get_tile_xy(n[0], n[1]).type == "FLOOR" and not visited[n[0]][n[1]]:
+                        if cave.get_tile_xy(n[0], n[1]).terrain_type == "FLOOR" and not visited[n[0]][n[1]]:
                             stack.append(Vector2i(n[0], n[1]))
                 components.append(component)
                 
@@ -269,19 +264,23 @@ func set_next_stairs(map_data: MapData, number: int) -> Array[Tile]:
     # 階段を設置するコードを追加
     var empty_tiles: Array[Tile] = []
     var stair_tiles: Array[Tile] = []
+    var up_stairs: Array[Tile] = map_data.filter_tiles(func(tile: Tile) -> bool:
+        return tile.object_type == "UP_STAIRS"
+    )
     for tile in map_data.tiles:
-        if tile.type == "FLOOR":
-            empty_tiles.append(tile)
+        if tile.terrain_type == "FLOOR" or tile.object_type == "UP_STAIRS":
+            # UP_STARISから10タイル以内のタイルは除外
+            var distance_ok = true
+            for up_stair in up_stairs:
+                if up_stair.position.distance_to(tile.position) <= 20:
+                    distance_ok =false
+                    break
+            if distance_ok:
+                empty_tiles.append(tile)
+    
     empty_tiles.shuffle()
     for i in range(min(number, empty_tiles.size())):
         var tile = empty_tiles[i]
         tile.set_object_type("DOWN_STAIRS")
         stair_tiles.append(tile)
     return stair_tiles
-    
-
-# 一つ上の層の階段の位置を受け取り、上り階段を設置する関数
-func set_previous_stairs(map_data: MapData, stairs_tile: Array[Tile]) -> void:
-    for tile in stairs_tile:
-        var t = map_data.get_tile_xy(tile.position.x, tile.position.y)
-        t.set_object_type("UP_STAIRS")
