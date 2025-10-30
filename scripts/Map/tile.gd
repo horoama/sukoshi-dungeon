@@ -2,7 +2,8 @@ class_name Tile  # Make the Tile class globally accessible
 
 const TILE_SIZE := Vector2i(32, 32)  # タイルのサイズ（ピクセル単位）
 
-var position: Vector2i = Vector2i(0, 0)
+# タイルのプロパティ
+var position: Vector2i = Vector2i(0, 0) # グリッド上の位置
 var type: String = "WALL"  # e.g., "WALL", "FLOOR"
 var terrain_atlas_coords: Vector2i = Vector2i(0, 1)  # デフォルトは壁タイルの座標
 var object_atlas_coords: Vector2i = Vector2i(0, 1)  # デフォルトは壁タイルの座標
@@ -15,7 +16,7 @@ var terrain_tile := TileDefine.TerrainTile
 var object_tile := TileDefine.ObjectTile
 
 func _init(grid_position: Vector2i = Vector2i(0, 0), tile_code: String = "FLOOR") -> void:
-    position = TILE_SIZE * grid_position
+    position = grid_position
     set_terrain_type(tile_code)
 
 func set_terrain_type(tile_type: String) -> void:
@@ -46,6 +47,11 @@ func set_object_type(tile_code: String) -> void:
         "DOWN_STAIRS":
             type = "DOWN_STAIRS"
             object_atlas_coords = object_tile.DOWN_STAIRS.ATLAS_COORDS
+            passable = true
+            transparent = true
+        "UP_STAIRS":
+            type = "UP_STAIRS"
+            object_atlas_coords = object_tile.UP_STAIRS.ATLAS_COORDS
             passable = true
             transparent = true
         _:

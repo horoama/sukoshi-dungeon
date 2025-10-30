@@ -43,16 +43,16 @@ func do_simulation_step(map: MapData) -> MapData:
                 # 周囲の壁が4未満なら床に変更
                 if wall_count < 4:
                     #new_map_data[y].append(Tile.FLOOR)
-                    new_map_data.change_tile_type(x, y, "FLOOR")
+                    new_map_data.change_terrain_tile_type(x, y, "FLOOR")
                 else:
-                    new_map_data.change_tile_type(x, y, "WALL")
+                    new_map_data.change_terrain_tile_type(x, y, "WALL")
             # 現在のセルが床の場合
             else:
                 # 周囲の壁が5以上なら壁に変更
                 if wall_count >= 5:
-                    new_map_data.change_tile_type(x, y, "WALL")
+                    new_map_data.change_terrain_tile_type(x, y, "WALL")
                 else:
-                    new_map_data.change_tile_type(x, y, "FLOOR")
+                    new_map_data.change_terrain_tile_type(x, y, "FLOOR")
     return new_map_data
 
 # 指定された位置に部屋を配置する関数
@@ -61,16 +61,14 @@ func place_room(map_data: MapData, room_x: int, room_y: int, room_width: int, ro
         for x in range(room_x, room_x + room_width):
             # マップの範囲内かチェック
             if x >= 0 and x < map_data.width and y >= 0 and y < map_data.height:
-                var tile = Tile.new(Vector2i(x, y), "FLOOR")
-                map_data.set_tile(x, y, tile)
+                map_data.change_terrain_tile_type(x, y, "FLOOR")
 
 # 水平方向の通路を作成する関数
 func carve_h_corridor(map: MapData, x1: int, x2: int, y: int) -> MapData:
     for x in range(min(x1, x2), max(x1, x2) + 1):
         # マップの範囲内かチェック
         if x >= 0 and x < map.width and y >= 0 and y < map.height:
-            var tile = Tile.new(Vector2i(x, y), "FLOOR")
-            map.set_tile(x, y, tile)
+            map.change_terrain_tile_type(x, y, "FLOOR")
     return map
 
 # 垂直方向の通路を作成する関数
@@ -78,8 +76,7 @@ func carve_v_corridor(map: MapData, y1: int, y2: int, x: int) -> MapData:
     for y in range(min(y1, y2), max(y1, y2) + 1):
         # マップの範囲内かチェック
         if x >= 0 and x < map.width and y >= 0 and y < map.height:
-            var tile = Tile.new(Vector2i(x, y), "FLOOR")
-            map.set_tile(x, y, tile)
+            map.change_terrain_tile_type(x, y, "FLOOR")
     return map
 
 # 部屋と通路を生成する関数
@@ -165,30 +162,30 @@ func generate_cave(
     # マップの外周を壁で囲む
     for x in range(width):
         #cave[0][x] = Tile.WALL          # 最上部の壁
-        cave.change_tile_type(x, 0, "WALL")
-        cave.change_tile_type(x, height-1, "WALL")
+        cave.change_terrain_tile_type(x, 0, "WALL")
+        cave.change_terrain_tile_type(x, height-1, "WALL")
     for y in range(height):
-        cave.change_tile_type(0, y, "WALL")
-        cave.change_tile_type(width-1, y, "WALL")
+        cave.change_terrain_tile_type(0, y, "WALL")
+        cave.change_terrain_tile_type(width-1, y, "WALL")
 
     # 内部領域のみランダムに地形を生成
     for y in range(1, height-1):
         for x in range(1, width-1):
             if randf() < wall_rate:
-                cave.change_tile_type(x, y, "WALL")  # 一定確率で壁を配置
+                cave.change_terrain_tile_type(x, y, "WALL")  # 一定確率で壁を配置
             else:
-                cave.change_tile_type(x, y, "FLOOR")  # それ以外は床を配置
+                cave.change_terrain_tile_type(x, y, "FLOOR")  # それ以外は床を配置
 
     # セルオートマトンによる地形の洗練化
     for step in range(simulation_steps):
         cave = do_simulation_step(cave)
         # シミュレーションの各ステップ後に外周の壁を再設定
         for x in range(width):
-            cave.change_tile_type(x, 0, "WALL")
-            cave.change_tile_type(x, height-1, "WALL")
+            cave.change_terrain_tile_type(x, 0, "WALL")
+            cave.change_terrain_tile_type(x, height-1, "WALL")
         for y in range(height):
-            cave.change_tile_type(0, y, "WALL")
-            cave.change_tile_type(width-1, y, "WALL")
+            cave.change_terrain_tile_type(0, y, "WALL")
+            cave.change_terrain_tile_type(width-1, y, "WALL")
     
     # 内部領域の総タイル数を計算
     var total = (width - 2) * (height - 2)
@@ -206,7 +203,7 @@ func generate_cave(
         while to_remove > 0:
             var index = randi() % wall_cells.size()
             var cell = wall_cells[index]
-            cave.change_tile_type(cell.x, cell.y, "FLOOR")
+            cave.change_terrain_tile_type(cell.x, cell.y, "FLOOR")
             wall_cells.remove_at(index)
             to_remove -= 1
             
@@ -263,18 +260,28 @@ func generate_cave(
 
 # After generate map
 ## set stair tiles, etc.
-func finalize_map(map_data: MapData) -> MapData:
+## Return positions of stairs
+func finalize_map(map_data: MapData) -> Array[Tile]:
     # ここに最終的なマップ調整のコードを追加
-    set_stairs(map_data, 1)
-    return map_data
+    return set_next_stairs(map_data, 1)
 
-func set_stairs(map_data: MapData, number: int) -> void:
+func set_next_stairs(map_data: MapData, number: int) -> Array[Tile]:
     # 階段を設置するコードを追加
-    var empty_tiles = []
+    var empty_tiles: Array[Tile] = []
+    var stair_tiles: Array[Tile] = []
     for tile in map_data.tiles:
-        if tile.type == "floor":
+        if tile.type == "FLOOR":
             empty_tiles.append(tile)
     empty_tiles.shuffle()
     for i in range(min(number, empty_tiles.size())):
         var tile = empty_tiles[i]
         tile.set_object_type("DOWN_STAIRS")
+        stair_tiles.append(tile)
+    return stair_tiles
+    
+
+# 一つ上の層の階段の位置を受け取り、上り階段を設置する関数
+func set_previous_stairs(map_data: MapData, stairs_tile: Array[Tile]) -> void:
+    for tile in stairs_tile:
+        var t = map_data.get_tile_xy(tile.position.x, tile.position.y)
+        t.set_object_type("UP_STAIRS")

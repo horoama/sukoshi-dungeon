@@ -21,6 +21,10 @@ const ObjectTile : Dictionary = {
         "ATLAS_ID": 1,
         "ATLAS_COORDS": Vector2(7, 16),
     },
+    "UP_STAIRS": {
+        "ATLAS_ID": 1,
+        "ATLAS_COORDS": Vector2(8, 16),
+    },
 }
 
 func get_tile(tile_type: String, layer_name: String) -> Dictionary:
