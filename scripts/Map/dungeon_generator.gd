@@ -25,21 +25,21 @@ func count_walls_around(map: MapData, x: int, y: int) -> int:
     return wall_count
 
 # セルオートマトンのシミュレーションを1ステップ実行する関数
-func do_simulation_step(map: MapData) -> MapData:
-    var new_map_data : MapData = MapData.new(map.width, map.height)
+func do_simulation_step(map: MapData, target_floor: bool = true, tartget_wall: bool = true) -> MapData:
+    var new_map_data : MapData = MapData.new(map.width, map.height, map.level)
     for y in range(map.height):
         for x in range(map.width):
             var wall_count = count_walls_around(map, x, y)
             # 現在のセルが壁の場合
-            if map.get_tile_xy(x, y).terrain_type == "WALL":
+            if map.get_tile_xy(x, y).terrain_type == "WALL" and tartget_wall:
                 # 周囲の壁が4未満なら床に変更
                 if wall_count < 4:
                     #new_map_data[y].append(Tile.FLOOR)
                     new_map_data.change_terrain_tile_type(x, y, "FLOOR")
-                else:
+                elif tartget_wall:
                     new_map_data.change_terrain_tile_type(x, y, "WALL")
             # 現在のセルが床の場合
-            else:
+            elif floor:
                 # 周囲の壁が5以上なら壁に変更
                 if wall_count >= 5:
                     new_map_data.change_terrain_tile_type(x, y, "WALL")
@@ -136,21 +136,16 @@ func get_neighbors(x: int, y: int, width: int, height: int) -> Array:
 # 洞窟を生成するメイン関数
 func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
     # 部屋と通路の初期生成
+    var level = 1
+    if prev_map != null:
+        level = prev_map.level + 1
     var cave : MapData = generate_rooms_and_corridors(
-        MapData.new(config.map_width, config.map_height),
+        MapData.new(config.map_width, config.map_height, level),
         config.room_attempts,
         config.room_min_size,
         config.room_max_size
     )
     
-    # マップの外周を壁で囲む
-    for x in range(config.map_width):
-        cave.change_terrain_tile_type(x, 0, "WALL")          # 最上部の壁
-        cave.change_terrain_tile_type(x, config.map_height-1, "WALL")
-    for y in range(config.map_height):
-        cave.change_terrain_tile_type(0, y, "WALL")
-        cave.change_terrain_tile_type(config.map_width-1, y, "WALL")
-
     # 内部領域のみランダムに地形を生成
     for y in range(1, config.map_height-1):
         for x in range(1, config.map_width-1):
@@ -162,13 +157,7 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
     # セルオートマトンによる地形の洗練化
     for step in range(config.simulation_steps):
         cave = do_simulation_step(cave)
-        # シミュレーションの各ステップ後に外周の壁を再設定
-        for x in range(config.map_width):
-            cave.change_terrain_tile_type(x, 0, "WALL")
-            cave.change_terrain_tile_type(x, config.map_height-1, "WALL")
-        for y in range(config.map_height):
-            cave.change_terrain_tile_type(0, y, "WALL")
-            cave.change_terrain_tile_type(config.map_width-1, y, "WALL")
+
     
     # 内部領域の総タイル数を計算
     var total = (config.map_width - 2) * (config.map_height - 2)
@@ -180,15 +169,19 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
                 wall_cells.append(Vector2i(x, y))
     var wall_count = wall_cells.size()
     var max_wall = total * config.wall_rate
-    # 壁が多すぎる場合、ランダムに壁を床に変換
+
+    # 壁が多すぎる場合、床を増やすのみのセル・オートマトンを実行
     if wall_count > max_wall:
-        var to_remove = wall_count - max_wall
-        while to_remove > 0:
-            var index = randi() % wall_cells.size()
-            var cell = wall_cells[index]
-            cave.change_terrain_tile_type(cell.x, cell.y, "FLOOR")
-            wall_cells.remove_at(index)
-            to_remove -= 1
+        cave = do_simulation_step(cave, true , false)
+
+    # 外周の壁を再設定
+    for x in range(config.map_width):
+        cave.change_terrain_tile_type(x, 0, "WALL")
+        cave.change_terrain_tile_type(x, config.map_height-1, "WALL")
+    for y in range(config.map_height):
+        cave.change_terrain_tile_type(0, y, "WALL")
+        cave.change_terrain_tile_type(config.map_width-1, y, "WALL")
+
     # prev_map がある場合はそのDOWN_STAIRSを探す
     # その座標と同じ場所にUP_STAIRSを配置
     if prev_map != null:

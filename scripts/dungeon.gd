@@ -9,6 +9,9 @@ var current_dungeon_map: MapData
 # dungeon_generatorノードへの参照
 @onready var dungeon_generator = $DungeonGenerator
 
+# 階層が変わったシグナル
+signal level_changed(new_level: int)
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
     current_dungeon_map = dungeon_generator.generate_cave(dungeon_config, null)
@@ -23,6 +26,8 @@ func _next_level() -> void:
     # タイルマップを更新
     update_tile_map(next_dungeon_map)
     current_dungeon_map = next_dungeon_map
+    # emit signal
+    level_changed.emit(current_dungeon_map.level)
 
 # tile_map_dataに基づいてタイルマップを更新する関数
 func update_tile_map(map_data: MapData) -> void:

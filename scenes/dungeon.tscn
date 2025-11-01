@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://yibjcjia6bm0"]
+[gd_scene load_steps=14 format=3 uid="uid://yibjcjia6bm0"]
 
 [ext_resource type="Script" uid="uid://bppcr8dio1s8y" path="res://scripts/dungeon.gd" id="1_0wj4k"]
 [ext_resource type="Script" uid="uid://boftldsulovox" path="res://scripts/Map/dungeon_generator.gd" id="1_c4wp1"]
 [ext_resource type="Texture2D" uid="uid://k45bcaup6j74" path="res://assets/sprites/tiles.png" id="1_ubp1v"]
 [ext_resource type="Script" uid="uid://c88yfuck61bxy" path="res://scripts/Map/dungeon_config.gd" id="2_fvacq"]
 [ext_resource type="Texture2D" uid="uid://bmd5efsdnfw68" path="res://assets/sprites/items.png" id="3_fpimf"]
+[ext_resource type="Script" uid="uid://bkx2ohi7keamq" path="res://scripts/GUI/side_ui.gd" id="6_ys5p8"]
 
 [sub_resource type="Resource" id="Resource_ys5p8"]
 script = ExtResource("2_fvacq")
@@ -860,7 +861,7 @@ tile_set = SubResource("TileSet_fvacq")
 [node name="Item" type="TileMapLayer" parent="DungeonMap"]
 tile_set = SubResource("TileSet_hsn05")
 
-[node name="Panel" type="Panel" parent="."]
+[node name="SideUI" type="Panel" parent="." node_paths=PackedStringArray("level_num")]
 anchors_preset = -1
 anchor_left = 0.85200006
 anchor_top = 0.504
@@ -872,8 +873,10 @@ offset_right = 284.1599
 offset_bottom = 543.68
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("6_ys5p8")
+level_num = NodePath("FloorNum")
 
-[node name="Button" type="Button" parent="Panel"]
+[node name="GodButton" type="Button" parent="SideUI"]
 layout_mode = 1
 anchors_preset = 14
 anchor_top = 0.5
@@ -886,4 +889,18 @@ grow_vertical = 2
 text = "next Level"
 metadata/_edit_use_anchors_ = true
 
-[connection signal="pressed" from="Panel/Button" to="." method="_next_level"]
+[node name="FloorNum" type="Label" parent="SideUI"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -96.0
+offset_right = 96.0
+offset_bottom = 64.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 26
+text = "Basement: 1"
+metadata/_edit_use_anchors_ = true
+
+[connection signal="level_changed" from="." to="SideUI" method="_on_dungeon_level_changed"]
+[connection signal="pressed" from="SideUI/GodButton" to="." method="_next_level"]
