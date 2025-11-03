@@ -25,6 +25,9 @@ func count_walls_around(map: MapData, x: int, y: int) -> int:
     return wall_count
 
 # セルオートマトンのシミュレーションを1ステップ実行する関数
+# map: シミュレーションを行うマップデータ
+# target_floor: 床に対して変更を加えるかどうかのフラグ
+# target_wall: 壁に対して変更を加えるかどうかのフラグ
 func do_simulation_step(map: MapData, target_floor: bool = true, tartget_wall: bool = true) -> MapData:
     var new_map_data : MapData = MapData.new(map.width, map.height, map.level)
     for y in range(map.height):
@@ -39,7 +42,7 @@ func do_simulation_step(map: MapData, target_floor: bool = true, tartget_wall: b
                 elif tartget_wall:
                     new_map_data.change_terrain_tile_type(x, y, "WALL")
             # 現在のセルが床の場合
-            elif floor:
+            elif target_floor:
                 # 周囲の壁が5以上なら壁に変更
                 if wall_count >= 5:
                     new_map_data.change_terrain_tile_type(x, y, "WALL")
