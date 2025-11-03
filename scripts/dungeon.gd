@@ -6,6 +6,8 @@ var current_dungeon_map: MapData
 # タイルマップレイヤーへの参照
 @export var terrain_tile_map: TileMapLayer
 @export var object_tile_map: TileMapLayer
+@export var dungeon_map_loot: Node
+
 # dungeon_generatorノードへの参照
 @onready var dungeon_generator = $DungeonGenerator
 
@@ -22,7 +24,7 @@ func _ready() -> void:
     dungeon_generator.finalize_map(current_dungeon_map)
     # タイルマップを更新
     update_tile_map(current_dungeon_map)
-    spawn_player(Vector2i(1, 1))
+    spawn_player()
 
 
 func _next_level() -> void:
@@ -34,7 +36,6 @@ func _next_level() -> void:
     current_dungeon_map = next_dungeon_map
     # emit signal
     level_changed.emit(current_dungeon_map.level)
-    player.move_to_xy(1, 1)
 
 # tile_map_dataに基づいてタイルマップを更新する関数
 func update_tile_map(map_data: MapData) -> void:
@@ -49,10 +50,24 @@ func update_tile_map(map_data: MapData) -> void:
         if map_data.get_tile(grid_pos).object_type != "NONE":
             object_tile_map.set_cell(grid_pos, 1, map_data.get_tile(grid_pos).object_atlas_coords)
 
-func spawn_player(pos: Vector2i) -> void:
+func spawn_player() -> void:
+    var emptys = current_dungeon_map.filter_tiles(func(tile: Tile) -> bool:
+        return tile.terrain_type == "FLOOR" and tile.object_type == "NONE"
+    )
+    # choose random floor
+    emptys.shuffle()
+    var selected = emptys[0]
+    print("selected: ", selected.position)
     player = player_scene.instantiate()
     add_child(player)
-    player.player_moved.connect(move_player)
+    #player.move_to(selected.position)
+    player.move_to(selected.position)
+    player.player_moved.connect(_on_player_moved)
 
-func move_player(pos: Vector2i) -> void:
-    print("charactor move to", pos)
+func _on_player_moved(pos: Vector2i) -> void:
+    print("moved: ", pos)
+        
+
+func tile_to_local(pos: Vector2i) -> Vector2:
+    var local_pos = terrain_tile_map.map_to_local(pos)
+    return local_pos

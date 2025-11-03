@@ -840,19 +840,18 @@ texture = ExtResource("3_fpimf")
 tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_ys5p8")
 
-[node name="Dungeon" type="Node" node_paths=PackedStringArray("terrain_tile_map", "object_tile_map")]
+[node name="Dungeon" type="Node" node_paths=PackedStringArray("terrain_tile_map", "object_tile_map", "dungeon_map_loot")]
 script = ExtResource("1_0wj4k")
 dungeon_config = SubResource("Resource_ys5p8")
 terrain_tile_map = NodePath("DungeonMap/Map")
 object_tile_map = NodePath("DungeonMap/Object")
+dungeon_map_loot = NodePath("DungeonMap")
 player_scene = ExtResource("7_hsn05")
 
 [node name="DungeonGenerator" type="Node" parent="."]
 script = ExtResource("1_c4wp1")
 
 [node name="DungeonMap" type="Node2D" parent="."]
-position = Vector2(24, 40)
-scale = Vector2(0.935, 0.935)
 
 [node name="Map" type="TileMapLayer" parent="DungeonMap"]
 tile_set = SubResource("TileSet_fpimf")

@@ -7,12 +7,12 @@
 atlas = ExtResource("1_3vyb7")
 region = Rect2(0, 0, 32, 32)
 
-[node name="Player" type="Node"]
+[node name="Player" type="Node" node_paths=PackedStringArray("sprite")]
 script = ExtResource("1_g2els")
+sprite = NodePath("PlayerNode")
 
 [node name="PlayerNode" type="Node2D" parent="."]
 
 [node name="Sprite2D" type="Sprite2D" parent="PlayerNode"]
-position = Vector2(16, 16)
 texture = SubResource("AtlasTexture_3vyb7")
 flip_h = true

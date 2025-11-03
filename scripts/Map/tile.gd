@@ -1,7 +1,5 @@
 class_name Tile  # Make the Tile class globally accessible
 
-const TILE_SIZE := Vector2i(32, 32)  # タイルのサイズ（ピクセル単位）
-
 # タイルのプロパティ
 var position: Vector2i = Vector2i(0, 0) # グリッド上の位置
 var terrain_type: String = "WALL"  # e.g., "WALL", "FLOOR"
