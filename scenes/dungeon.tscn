@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bppcr8dio1s8y" path="res://scripts/dungeon.gd" id="1_0wj4k"]
 [ext_resource type="Script" uid="uid://boftldsulovox" path="res://scripts/Map/dungeon_generator.gd" id="1_c4wp1"]
 [ext_resource type="Texture2D" uid="uid://k45bcaup6j74" path="res://assets/sprites/tiles.png" id="1_ubp1v"]
-[ext_resource type="Script" uid="uid://c88yfuck61bxy" path="res://scripts/Map/dungeon_config.gd" id="2_fvacq"]
+[ext_resource type="Script" path="res://scripts/Map/dungeon_config.gd" id="2_fvacq"]
 [ext_resource type="Texture2D" uid="uid://bmd5efsdnfw68" path="res://assets/sprites/items.png" id="3_fpimf"]
 [ext_resource type="Script" uid="uid://bkx2ohi7keamq" path="res://scripts/GUI/side_ui.gd" id="6_ys5p8"]
 [ext_resource type="PackedScene" uid="uid://bgbbej4jvp6pf" path="res://scenes/player.tscn" id="7_hsn05"]
