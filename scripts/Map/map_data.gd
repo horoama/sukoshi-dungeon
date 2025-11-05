@@ -1,5 +1,6 @@
 class_name MapData
 
+var TILE_SIZE = 32
 var level: int
 var width: int
 var height: int
@@ -82,3 +83,8 @@ func reveal_tile(x: int, y: int) -> void:
     if tile and tile.state == "hidden":
         tile.state = "visible"
         map_updated.emit()
+
+func tile_to_local(pos: Vector2i) -> Vector2:
+    var local_pos = Vector2(pos.x * TILE_SIZE, pos.y * TILE_SIZE)
+    return local_pos
+

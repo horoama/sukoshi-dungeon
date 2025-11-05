@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EntityDefinition" load_steps=4 format=3 uid="uid://ckjwplq4tml3m"]
+
+[ext_resource type="Script" uid="uid://blaa73kgju8ys" path="res://scripts/Entity/entity_definition.gd" id="1_i56r6"]
+[ext_resource type="Texture2D" uid="uid://dy8pkwux585sg" path="res://assets/sprites/rogues.png" id="2_iqheu"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iqheu"]
+atlas = ExtResource("2_iqheu")
+region = Rect2(0, 0, 32, 32)
+
+[resource]
+script = ExtResource("1_i56r6")
+name = "Player"
+texture = SubResource("AtlasTexture_iqheu")
