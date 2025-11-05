@@ -9,10 +9,11 @@ region = Rect2(0, 0, 32, 32)
 
 [node name="Player" type="Node" node_paths=PackedStringArray("sprite")]
 script = ExtResource("1_g2els")
-sprite = NodePath("PlayerNode")
+sprite = NodePath("PlayerNode/Sprite2D")
 
 [node name="PlayerNode" type="Node2D" parent="."]
 
 [node name="Sprite2D" type="Sprite2D" parent="PlayerNode"]
 texture = SubResource("AtlasTexture_3vyb7")
+centered = false
 flip_h = true

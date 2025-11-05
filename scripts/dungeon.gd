@@ -13,6 +13,8 @@ var current_dungeon_map: MapData
 
 @export var player_scene : PackedScene
 
+var TILE_SIZE = 32
+
 var player: Node
 
 # 階層が変わったシグナル
@@ -69,5 +71,5 @@ func _on_player_moved(pos: Vector2i) -> void:
         
 
 func tile_to_local(pos: Vector2i) -> Vector2:
-    var local_pos = terrain_tile_map.map_to_local(pos)
+    var local_pos = Vector2(pos.x * TILE_SIZE, pos.y * TILE_SIZE)
     return local_pos
