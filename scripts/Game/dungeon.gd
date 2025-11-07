@@ -38,12 +38,14 @@ func _ready() -> void:
 
 
 func _next_level() -> void:
+	entities.remove_child(player)
 	var next_dungeon_map: MapData = dungeon_generator.generate_cave(dungeon_config, current_dungeon_map)
 	# 下り階段を設置
 	dungeon_generator.finalize_map(next_dungeon_map)
 	# タイルマップを更新
 	update_tile_map(next_dungeon_map)
 	current_dungeon_map = next_dungeon_map
+	entities.add_child(player)
 	# emit signal
 	level_changed.emit(current_dungeon_map.level)
 

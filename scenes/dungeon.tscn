@@ -1,13 +1,12 @@
-[gd_scene load_steps=16 format=3 uid="uid://yibjcjia6bm0"]
+[gd_scene load_steps=15 format=3 uid="uid://yibjcjia6bm0"]
 
-[ext_resource type="Script" uid="uid://bppcr8dio1s8y" path="res://scripts/dungeon.gd" id="1_0wj4k"]
+[ext_resource type="Script" uid="uid://bppcr8dio1s8y" path="res://scripts/Game/dungeon.gd" id="1_0wj4k"]
 [ext_resource type="Script" uid="uid://boftldsulovox" path="res://scripts/Map/dungeon_generator.gd" id="1_c4wp1"]
 [ext_resource type="Texture2D" uid="uid://k45bcaup6j74" path="res://assets/sprites/tiles.png" id="1_ubp1v"]
-[ext_resource type="Script" path="res://scripts/Map/dungeon_config.gd" id="2_fvacq"]
+[ext_resource type="Script" uid="uid://c88yfuck61bxy" path="res://scripts/Map/dungeon_config.gd" id="2_fvacq"]
 [ext_resource type="Texture2D" uid="uid://bmd5efsdnfw68" path="res://assets/sprites/items.png" id="3_fpimf"]
-[ext_resource type="Script" uid="uid://cj6rhartlq1f" path="res://scripts/event_handler.gd" id="5_etlrv"]
+[ext_resource type="Script" uid="uid://cj6rhartlq1f" path="res://scripts/Game/event_handler.gd" id="5_etlrv"]
 [ext_resource type="Script" uid="uid://bkx2ohi7keamq" path="res://scripts/GUI/side_ui.gd" id="6_ys5p8"]
-[ext_resource type="PackedScene" uid="uid://bgbbej4jvp6pf" path="res://scenes/player.tscn" id="7_hsn05"]
 
 [sub_resource type="Resource" id="Resource_ys5p8"]
 script = ExtResource("2_fvacq")
@@ -841,13 +840,11 @@ texture = ExtResource("3_fpimf")
 tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_ys5p8")
 
-[node name="Dungeon" type="Node" node_paths=PackedStringArray("terrain_tile_map", "object_tile_map", "dungeon_map_loot")]
+[node name="Dungeon" type="Node" node_paths=PackedStringArray("terrain_tile_map", "object_tile_map")]
 script = ExtResource("1_0wj4k")
 dungeon_config = SubResource("Resource_ys5p8")
 terrain_tile_map = NodePath("DungeonTileMap/Map")
 object_tile_map = NodePath("DungeonTileMap/Object")
-dungeon_map_loot = NodePath("DungeonTileMap")
-player_scene = ExtResource("7_hsn05")
 
 [node name="DungeonGenerator" type="Node" parent="."]
 script = ExtResource("1_c4wp1")

@@ -13,4 +13,6 @@ func get_action() -> Action:
 		action = MovementAction.new(-1, 0)
 	elif Input.is_action_just_pressed("move_right"):
 		action = MovementAction.new(1, 0)
+	elif Input.is_action_just_pressed("interact"):
+		action = StairAction.new("down")
 	return action
