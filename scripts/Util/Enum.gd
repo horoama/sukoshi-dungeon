@@ -36,6 +36,7 @@ enum Message {
     STAIR_UP_NOT_FOUND,
 }
 
+
 # ===== ヘルパー =====
 static func message_to_string(m: int) -> String:
     match m:

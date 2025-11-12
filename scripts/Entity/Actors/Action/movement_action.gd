@@ -14,4 +14,5 @@ func perform(dungeon: Dungeon, entity: Entity) -> void:
     var destination_tile: Tile = map_data.get_tile(destination)
     if not destination_tile or not destination_tile.passable:
         return
+    logger.debug("Moving entity to: %s" % destination)
     entity.move(offset)
