@@ -1,59 +1,54 @@
-class_name Tile  # Make the Tile class globally accessible
+class_name Tile # Make the Tile class globally accessible
 
 # タイルのプロパティ
 var position: Vector2i = Vector2i(0, 0) # グリッド上の位置
-var terrain_type: String = "WALL"  # e.g., "WALL", "FLOOR"
-var object_type: String = "NONE"
-var terrain_atlas_coords: Vector2i = Vector2i(0, 1)  # デフォルトは壁タイルの座標
-var object_atlas_coords: Vector2i = Vector2i(0, 1)  # デフォルトは壁タイルの座標
-var items: Array = []  # List of items on this tile
-var state: String = "hidden"  # e.g., "hidden", "visible", "explored"
+var terrain_type := Enum.TerrainTileType.WALL
+var object_type := Enum.ObjectType.NONE
+var terrain_atlas_coords: Vector2i = Vector2i(0, 1) # デフォルトは壁タイルの座標
+var object_atlas_coords: Vector2i = Vector2i(0, 1) # デフォルトは壁タイルの座標
+var items: Array = [] # List of items on this tile
+var state := Enum.TileStatus.HIDDEN
 var passable: bool = false
 var transparent: bool = false
 
 var terrain_tile := TileDefine.TerrainTile
 var object_tile := TileDefine.ObjectTile
 
-func _init(grid_position: Vector2i = Vector2i(0, 0), tile_code: String = "FLOOR") -> void:
+func _init(grid_position: Vector2i = Vector2i(0, 0), terrain_tile_type: Enum.TerrainTileType = Enum.TerrainTileType.FLOOR) -> void:
     position = grid_position
-    set_terrain_type(tile_code)
+    set_terrain_type(terrain_tile_type)
 
-func set_terrain_type(tile_type: String) -> void:
+func set_terrain_type(tile_type: Enum.TerrainTileType) -> void:
     match tile_type:
-        "FLOOR":
-            terrain_type = "FLOOR"
+        Enum.TerrainTileType.FLOOR:
+            terrain_type = Enum.TerrainTileType.FLOOR
             terrain_atlas_coords = terrain_tile.FLOOR.ATLAS_COORDS
             passable = true
             transparent = true
-        "WALL":
-            terrain_type = "WALL"
+        Enum.TerrainTileType.WALL:
+            terrain_type = Enum.TerrainTileType.WALL
             terrain_atlas_coords = terrain_tile.WALL.ATLAS_COORDS
             passable = false
             transparent = false
-        "DOWN_STAIRS":
-            terrain_type = "DOWN_STAIRS"
-            terrain_atlas_coords = terrain_tile.DOWN_STAIRS.ATLAS_COORDS
-            passable = true
-            transparent = true
         _:
-            terrain_type = "UNKNOWN"
+            terrain_type = Enum.TerrainTileType.FLOOR
             terrain_atlas_coords = terrain_tile.FLOOR.ATLAS_COORDS
             passable = false
             transparent = false
 
-func set_object_type(tile_code: String) -> void:
-    match tile_code:
-        "DOWN_STAIRS":
-            object_type = "DOWN_STAIRS"
+func set_object_type(tile_type: Enum.ObjectType) -> void:
+    match tile_type:
+        Enum.ObjectType.DOWN_STAIRS:
+            object_type = Enum.ObjectType.DOWN_STAIRS
             object_atlas_coords = object_tile.DOWN_STAIRS.ATLAS_COORDS
             passable = true
             transparent = true
-        "UP_STAIRS":
-            object_type = "UP_STAIRS"
+        Enum.ObjectType.UP_STAIRS:
+            object_type = Enum.ObjectType.UP_STAIRS
             object_atlas_coords = object_tile.UP_STAIRS.ATLAS_COORDS
             passable = true
             transparent = true
         _:
-            object_type = "UNKNOWN"
+            object_type = Enum.ObjectType.NONE
             object_atlas_coords = object_tile.NONE.ATLAS_COORDS
             passable = false

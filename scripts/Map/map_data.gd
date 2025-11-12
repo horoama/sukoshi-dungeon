@@ -13,15 +13,15 @@ func _init(map_width: int, map_height: int, map_level: int) -> void:
     self.width = map_width
     self.height = map_height
     self.level = map_level
-    fill_map("WALL")
+    fill_map(Enum.TerrainTileType.WALL)
     # signal emit
     map_updated.emit()
 
-func fill_map(tile_code: String) -> void:
+func fill_map(terrain_tile_type: Enum.TerrainTileType) -> void:
     tiles.clear()
     for y in range(height):
         for x in range(width):
-            var tile = Tile.new(Vector2i(x, y), tile_code)
+            var tile = Tile.new(Vector2i(x, y), terrain_tile_type)
             tiles.append(tile)
 
 func get_tile_xy(x: int, y: int) -> Tile:
@@ -46,12 +46,12 @@ func set_tile(x: int, y: int, tile: Tile) -> void:
         tiles[index] = tile
     map_updated.emit()
 
-func change_terrain_tile_type(x: int, y: int, tile_code: String) -> void:
+func change_terrain_tile_type(x: int, y: int, tile_code: Enum.TerrainTileType) -> void:
     var tile = get_tile_xy(x, y)
     if tile:
         tile.set_terrain_type(tile_code)
 
-func change_object_tile_type(x: int, y: int, tile_code: String) -> void:
+func change_object_tile_type(x: int, y: int, tile_code: Enum.ObjectType) -> void:
     var tile = get_tile_xy(x, y)
     if tile:
         tile.set_object_type(tile_code)
@@ -80,11 +80,10 @@ func is_transparent(x: int, y: int) -> bool:
 
 func reveal_tile(x: int, y: int) -> void:
     var tile = get_tile_xy(x, y)
-    if tile and tile.state == "hidden":
-        tile.state = "visible"
+    if tile and tile.state == Enum.TileStatus.HIDDEN:
+        tile.state = Enum.TileStatus.VISIBLE
         map_updated.emit()
 
 func tile_to_local(pos: Vector2i) -> Vector2:
     var local_pos = Vector2(pos.x * TILE_SIZE, pos.y * TILE_SIZE)
     return local_pos
-

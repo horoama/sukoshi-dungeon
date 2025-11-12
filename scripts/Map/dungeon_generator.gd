@@ -4,6 +4,7 @@ extends Node
 
 
 
+
 func _ready() -> void:
     pass
 
@@ -20,7 +21,7 @@ func count_walls_around(map: MapData, x: int, y: int) -> int:
             var ny = y + dy
             # マップの範囲内かチェック
             if nx >= 0 and nx < map.width and ny >= 0 and ny < map.height:
-                if map.get_tile_xy(nx, ny).terrain_type == "WALL":
+                if map.get_tile_xy(nx, ny).terrain_type == Enum.TerrainTileType.WALL:
                     wall_count += 1
     return wall_count
 
@@ -28,26 +29,26 @@ func count_walls_around(map: MapData, x: int, y: int) -> int:
 # map: シミュレーションを行うマップデータ
 # target_floor: 床に対して変更を加えるかどうかのフラグ
 # target_wall: 壁に対して変更を加えるかどうかのフラグ
-func do_simulation_step(map: MapData, target_floor: bool = true, tartget_wall: bool = true) -> MapData:
+func do_simulation_step(map: MapData, target_floor: bool = true, target_wall: bool = true) -> MapData:
     var new_map_data : MapData = MapData.new(map.width, map.height, map.level)
     for y in range(map.height):
         for x in range(map.width):
             var wall_count = count_walls_around(map, x, y)
             # 現在のセルが壁の場合
-            if map.get_tile_xy(x, y).terrain_type == "WALL" and tartget_wall:
+            if map.get_tile_xy(x, y).terrain_type == Enum.TerrainTileType.WALL and target_wall:
                 # 周囲の壁が4未満なら床に変更
                 if wall_count < 4:
                     #new_map_data[y].append(Tile.FLOOR)
-                    new_map_data.change_terrain_tile_type(x, y, "FLOOR")
-                elif tartget_wall:
-                    new_map_data.change_terrain_tile_type(x, y, "WALL")
+                    new_map_data.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.FLOOR)
+                elif target_wall:
+                    new_map_data.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.WALL)
             # 現在のセルが床の場合
             elif target_floor:
                 # 周囲の壁が5以上なら壁に変更
                 if wall_count >= 5:
-                    new_map_data.change_terrain_tile_type(x, y, "WALL")
+                    new_map_data.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.WALL)
                 else:
-                    new_map_data.change_terrain_tile_type(x, y, "FLOOR")
+                    new_map_data.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.FLOOR)
     return new_map_data
 
 # 指定された位置に部屋を配置する関数
@@ -56,14 +57,14 @@ func place_room(map_data: MapData, room_x: int, room_y: int, room_width: int, ro
         for x in range(room_x, room_x + room_width):
             # マップの範囲内かチェック
             if x >= 0 and x < map_data.width and y >= 0 and y < map_data.height:
-                map_data.change_terrain_tile_type(x, y, "FLOOR")
+                map_data.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.FLOOR)
 
 # 水平方向の通路を作成する関数
 func carve_h_corridor(map: MapData, x1: int, x2: int, y: int) -> MapData:
     for x in range(min(x1, x2), max(x1, x2) + 1):
         # マップの範囲内かチェック
         if x >= 0 and x < map.width and y >= 0 and y < map.height:
-            map.change_terrain_tile_type(x, y, "FLOOR")
+            map.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.FLOOR)
     return map
 
 # 垂直方向の通路を作成する関数
@@ -71,7 +72,7 @@ func carve_v_corridor(map: MapData, y1: int, y2: int, x: int) -> MapData:
     for y in range(min(y1, y2), max(y1, y2) + 1):
         # マップの範囲内かチェック
         if x >= 0 and x < map.width and y >= 0 and y < map.height:
-            map.change_terrain_tile_type(x, y, "FLOOR")
+            map.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.FLOOR)
     return map
 
 # 部屋と通路を生成する関数
@@ -153,9 +154,9 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
     for y in range(1, config.map_height-1):
         for x in range(1, config.map_width-1):
             if randf() < config.wall_rate:
-                cave.change_terrain_tile_type(x, y, "WALL")  # 一定確率で壁を配置
+                cave.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.WALL)  # 一定確率で壁を配置
             else:
-                cave.change_terrain_tile_type(x, y, "FLOOR")  # それ以外は床を配置
+                cave.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.FLOOR)  # それ以外は床を配置
 
     # セルオートマトンによる地形の洗練化
     for step in range(config.simulation_steps):
@@ -168,7 +169,7 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
     var wall_cells = []
     for y in range(1, config.map_height - 1):
         for x in range(1, config.map_width - 1):
-            if cave.get_tile_xy(x, y).terrain_type == "WALL":
+            if cave.get_tile_xy(x, y).terrain_type == Enum.TerrainTileType.WALL:
                 wall_cells.append(Vector2i(x, y))
     var wall_count = wall_cells.size()
     var max_wall = total * config.wall_rate
@@ -179,32 +180,32 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
 
     # 外周の壁を再設定
     for x in range(config.map_width):
-        cave.change_terrain_tile_type(x, 0, "WALL")
-        cave.change_terrain_tile_type(x, config.map_height-1, "WALL")
+        cave.get_tile_xy(x, 0).set_terrain_type(Enum.TerrainTileType.WALL)
+        cave.get_tile_xy(x, config.map_height-1).set_terrain_type(Enum.TerrainTileType.WALL)
     for y in range(config.map_height):
-        cave.change_terrain_tile_type(0, y, "WALL")
-        cave.change_terrain_tile_type(config.map_width-1, y, "WALL")
+        cave.get_tile_xy(0, y).set_terrain_type(Enum.TerrainTileType.WALL)
+        cave.get_tile_xy(config.map_width-1, y).set_terrain_type(Enum.TerrainTileType.WALL)
 
     # prev_map がある場合はそのDOWN_STAIRSを探す
     # その座標と同じ場所にUP_STAIRSを配置
     if prev_map != null:
         for tile in prev_map.tiles:
-            if tile.object_type == "DOWN_STAIRS":
+            if tile.object_type == Enum.ObjectType.DOWN_STAIRS:
                 # 階段を設置する
-                cave.change_object_tile_type(tile.position.x, tile.position.y, "UP_STAIRS")
-                cave.change_terrain_tile_type(tile.position.x, tile.position.y, "FLOOR")
+                cave.get_tile_xy(tile.position.x, tile.position.y).set_object_type(Enum.ObjectType.UP_STAIRS)
+                cave.get_tile_xy(tile.position.x, tile.position.y).set_terrain_type(Enum.TerrainTileType.FLOOR)
                 # 周りのタイルに床に変更(外周を除く)
                 var neighbors = get_neighbors(tile.position.x, tile.position.y, config.map_width, config.map_height)
                 for n in neighbors:
-                    cave.change_terrain_tile_type(n[0], n[1], "FLOOR")
-            
+                    cave.get_tile_xy(n[0], n[1]).set_terrain_type(Enum.TerrainTileType.FLOOR)
+
     # 連結成分を検出し、分断されている場合は通路で接続
     var visited = ArrayUtils.create_2d_array(config.map_width, config.map_height, false)
     var components: Array = []
     for y in range(1, config.map_height - 1):
         for x in range(1, config.map_width - 1):
             # まだ訪れていない床タイルから探索を開始
-            if cave.get_tile_xy(x, y).terrain_type == "FLOOR" and not visited[x][y]:
+            if cave.get_tile_xy(x, y).terrain_type == Enum.TerrainTileType.FLOOR and not visited[x][y]:
                 # 深さ優先探索で連結成分を収集
                 var stack: Array = [Vector2i(x, y)]
                 # 収集したタイルのリスト
@@ -222,7 +223,7 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
                     # 隣接セルをチェックし、床タイルで未訪問のものをスタックに追加
                     var neighbors = get_neighbors(cell.x, cell.y, config.map_width, config.map_height)
                     for n in neighbors:
-                        if cave.get_tile_xy(n[0], n[1]).terrain_type == "FLOOR" and not visited[n[0]][n[1]]:
+                        if cave.get_tile_xy(n[0], n[1]).terrain_type == Enum.TerrainTileType.FLOOR and not visited[n[0]][n[1]]:
                             stack.append(Vector2i(n[0], n[1]))
                 components.append(component)
                 
@@ -261,11 +262,12 @@ func set_next_stairs(map_data: MapData, number: int) -> Array[Tile]:
     var empty_tiles: Array[Tile] = []
     var stair_tiles: Array[Tile] = []
     var up_stairs: Array[Tile] = map_data.filter_tiles(func(tile: Tile) -> bool:
-        return tile.object_type == "UP_STAIRS"
+        return tile.object_type == Enum.ObjectType.UP_STAIRS
     )
     for tile in map_data.tiles:
-        if tile.terrain_type == "FLOOR" or tile.object_type == "UP_STAIRS":
-            # UP_STARISから10タイル以内のタイルは除外
+        # 階段設置用の空きタイルを収集
+        if tile.terrain_type == Enum.TerrainTileType.FLOOR or tile.object_type == Enum.ObjectType.UP_STAIRS:
+            # UP_STAIRSから10タイル以内のタイルは除外
             var distance_ok = true
             for up_stair in up_stairs:
                 if up_stair.position.distance_to(tile.position) <= 20:
@@ -277,6 +279,7 @@ func set_next_stairs(map_data: MapData, number: int) -> Array[Tile]:
     empty_tiles.shuffle()
     for i in range(min(number, empty_tiles.size())):
         var tile = empty_tiles[i]
-        tile.set_object_type("DOWN_STAIRS")
+        tile.set_object_type(Enum.ObjectType.DOWN_STAIRS)
+        tile.set_terrain_type(Enum.TerrainTileType.FLOOR)
         stair_tiles.append(tile)
     return stair_tiles

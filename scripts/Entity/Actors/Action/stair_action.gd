@@ -1,24 +1,42 @@
 class_name StairAction
 extends Action
 
-var direction: String
+# 階段の方向（enum を利用）
+var direction: int
 
-func _init(direction: String) -> void:
-    self.direction = direction
+func _init(dir: int) -> void:
+    # 引数は Enum.StairDirection の値を想定
+    # パラメータ名を変更してクラス変数とのシャドウを避ける
+    self.direction = dir
 
 
 func perform(dungeon: Dungeon, entity: Entity) -> void:
-    print("use stair ", direction)
-    # check stair is exist
+    # 現在地のタイルを取得
     var map_data: MapData = dungeon.current_dungeon_map
     var tile: Tile = map_data.get_tile(entity.grid_position)
-    if direction == "down":
-        if tile.object_type == "DOWN_STAIRS":
-            dungeon._next_level()
-        else:
-            print("There is no stairs down here.")
-    elif direction == "up":
-        if tile.object_type == "DOWNS_STARS":
-            print("not implemented yet.")
-        else:
-            print("There is no stairs up here.")
+    
+    # 方向に応じて階段の処理を実行（match で分岐）
+    match direction:
+        Enum.StairDirection.DOWN:
+            _use_down_stairs(dungeon, tile)
+        Enum.StairDirection.UP:
+            _use_up_stairs(dungeon, tile)
+
+
+func _use_down_stairs(dungeon: Dungeon, tile: Tile) -> void:
+    # タイル上に DOWN_STAIRS があるかチェック
+    if tile.object_type == Enum.ObjectType.DOWN_STAIRS:
+        print(Enum.message_to_string(Enum.Message.STAIR_DOWN_MOVE))
+        dungeon.next_level()
+    else:
+        print(Enum.message_to_string(Enum.Message.STAIR_DOWN_NOT_FOUND))
+
+
+func _use_up_stairs(_dungeon: Dungeon, tile: Tile) -> void:
+    # タイル上に UP_STAIRS があるかチェック
+    if tile.object_type == Enum.ObjectType.UP_STAIRS:
+        print(Enum.message_to_string(Enum.Message.STAIR_UP_MOVE))
+        # 上り処理（未実装ならコメントのまま）
+        # dungeon.previous_level()
+    else:
+        print(Enum.message_to_string(Enum.Message.STAIR_UP_NOT_FOUND))

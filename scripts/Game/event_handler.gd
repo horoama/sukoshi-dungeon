@@ -14,5 +14,6 @@ func get_action() -> Action:
 	elif Input.is_action_just_pressed("move_right"):
 		action = MovementAction.new(1, 0)
 	elif Input.is_action_just_pressed("interact"):
-		action = StairAction.new("down")
+		# 階段アクションを生成する際は文字列ではなく enum を渡す
+		action = StairAction.new(Enum.StairDirection.DOWN)
 	return action

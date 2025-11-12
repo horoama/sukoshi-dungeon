@@ -9,9 +9,7 @@ func _init(dx: int, dy: int) -> void:
 
 
 func perform(dungeon: Dungeon, entity: Entity) -> void:
-    print("move")
     var destination: Vector2i = entity.grid_position + offset
-    
     var map_data: MapData = dungeon.current_dungeon_map
     var destination_tile: Tile = map_data.get_tile(destination)
     if not destination_tile or not destination_tile.passable:
