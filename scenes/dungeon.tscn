@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://yibjcjia6bm0"]
+[gd_scene load_steps=16 format=3 uid="uid://yibjcjia6bm0"]
 
 [ext_resource type="Script" uid="uid://bppcr8dio1s8y" path="res://scripts/Game/dungeon.gd" id="1_0wj4k"]
 [ext_resource type="Script" uid="uid://boftldsulovox" path="res://scripts/Map/dungeon_generator.gd" id="1_c4wp1"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://bmd5efsdnfw68" path="res://assets/sprites/items.png" id="3_fpimf"]
 [ext_resource type="Script" uid="uid://cj6rhartlq1f" path="res://scripts/Game/event_handler.gd" id="5_etlrv"]
 [ext_resource type="Script" uid="uid://bkx2ohi7keamq" path="res://scripts/GUI/side_ui.gd" id="6_ys5p8"]
+[ext_resource type="Script" uid="uid://cgimgxpd25hh" path="res://scripts/GUI/message_container.gd" id="8_etlrv"]
 
 [sub_resource type="Resource" id="Resource_ys5p8"]
 script = ExtResource("2_fvacq")
@@ -905,6 +906,24 @@ grow_horizontal = 2
 theme_override_font_sizes/font_size = 26
 text = "Basement: 1"
 metadata/_edit_use_anchors_ = true
+
+[node name="MessageContainer" type="ScrollContainer" parent="SideUI"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.76500005
+anchor_right = 0.5
+anchor_bottom = 0.76500005
+offset_left = -284.0
+offset_top = -232.32007
+offset_right = 284.0
+offset_bottom = 231.67993
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("8_etlrv")
+
+[node name="MessageList" type="VBoxContainer" parent="SideUI/MessageContainer"]
+layout_mode = 2
 
 [connection signal="level_changed" from="." to="SideUI" method="_on_dungeon_level_changed"]
 [connection signal="pressed" from="SideUI/GodButton" to="." method="_next_level"]
