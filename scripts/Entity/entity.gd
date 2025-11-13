@@ -33,6 +33,9 @@ func add_component(component_name: String, component: Component) -> void:
 	add_child(component)
 
 func move(offset: Vector2i) -> void:
+    # TODO: entityが存在していた場所がpasssibleだったかの確認は必要かも
+    # TODO: 移動先についてもentity自体がpassibleか見る必要あり
+    # TODO: map_data上にentityも置いてpassibleかのチェックをした方がよさそう
 	map_data.get_tile(grid_position).passable = true
 	grid_position += offset
-	map_data.get_tile(grid_position).passable = false
+	map_data.get_tile(grid_position).passable = alse
