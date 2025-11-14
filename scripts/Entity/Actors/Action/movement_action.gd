@@ -14,6 +14,6 @@ func perform(dungeon: Dungeon, entity: Entity) -> void:
 	var destination_tile: Tile = map_data.get_tile(destination)
 	# tileと同じアドレスにnot passibleなキャラやアイテムがいないか確認
 	if not destination_tile or not destination_tile.passable:
-		MessageContainer.send_message("Cannot move to %s" % destination, Color.RED)
+		MessageContainer.send_message("Cannot move to the destination.")
 		return
 	entity.move(offset)

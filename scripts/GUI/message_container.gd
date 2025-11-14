@@ -9,7 +9,7 @@ var last_message: Message = null
 func _ready() -> void:
 	SignalBus.message_sent.connect(_on_message_sent)
 
-static func send_message(text: String, color: Color) -> void:
+static func send_message(text: String, color: Color = Color.WHITE) -> void:
 	SignalBus.message_sent.emit(text, color)
 
 func _on_message_sent(text: String, color: Color) -> void:
