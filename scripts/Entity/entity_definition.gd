@@ -5,3 +5,6 @@ extends Resource
 @export var name: String = "Unnamed Entity"
 @export var texture: AtlasTexture
 @export_color_no_alpha var color: Color = Color.WHITE
+
+@export_category("Components")
+@export var fighter_definition: FighterComponentDefinition

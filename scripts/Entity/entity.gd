@@ -9,28 +9,31 @@ var grid_position: Vector2i:
         grid_position = value
         position = map_data.tile_to_local(grid_position)
 
+var _definition: EntityDefinition
 var entity_name: String
 var passable : bool = false
 var ai_type: AIType = AIType.NONE
 var entity_type: EntityType = EntityType.ACTOR
 var map_data: MapData
 
-var components: Dictionary = {}
+var fighter_component: FighterComponent
+
 
 func _init(map_data: MapData, grid_position: Vector2i, entity_definition: EntityDefinition) -> void:
     centered = false
     flip_h = true
     self.map_data = map_data
     self.grid_position = grid_position
-    self.texture = entity_definition.texture
-    self.entity_name = entity_definition.name
+    set_entity_type(entity_definition)
 
-func get_component(component_name: String) -> Component:
-    return components[component_name]
+func set_entity_type(entity_definition: EntityDefinition) -> void:
+    _definition = entity_definition
+    entity_name = entity_definition.name
+    texture = entity_definition.texture
+    if entity_definition.fighter_definition:
+        fighter_component = FighterComponent.new(entity_definition.fighter_definition)
+        add_child(fighter_component)
 
-func add_component(component_name: String, component: Component) -> void:
-    components[component_name] = component
-    add_child(component)
 
 func move(offset: Vector2i) -> void:
     # TODO: entityが存在していた場所がpasssibleだったかの確認は必要かも

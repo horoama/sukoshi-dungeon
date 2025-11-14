@@ -1,7 +1,15 @@
-[gd_resource type="Resource" script_class="EntityDefinition" load_steps=4 format=3 uid="uid://ckjwplq4tml3m"]
+[gd_resource type="Resource" script_class="EntityDefinition" load_steps=6 format=3 uid="uid://ckjwplq4tml3m"]
 
 [ext_resource type="Script" uid="uid://blaa73kgju8ys" path="res://scripts/Entity/entity_definition.gd" id="1_i56r6"]
+[ext_resource type="Script" uid="uid://bhyqm37wvdhwt" path="res://scripts/Entity/Actors/Components/ComponentDefinitions/fighter_component_definition.gd" id="1_jgmww"]
 [ext_resource type="Texture2D" uid="uid://dy8pkwux585sg" path="res://assets/sprites/rogues.png" id="2_iqheu"]
+
+[sub_resource type="Resource" id="Resource_2yv8a"]
+script = ExtResource("1_jgmww")
+max_hp = 20
+base_defense = 5
+base_power = 3
+metadata/_custom_type_script = "uid://bhyqm37wvdhwt"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_iqheu"]
 atlas = ExtResource("2_iqheu")
@@ -11,3 +19,4 @@ region = Rect2(0, 0, 32, 32)
 script = ExtResource("1_i56r6")
 name = "Player"
 texture = SubResource("AtlasTexture_iqheu")
+fighter_definition = SubResource("Resource_2yv8a")

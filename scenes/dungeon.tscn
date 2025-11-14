@@ -866,7 +866,7 @@ tile_set = SubResource("TileSet_hsn05")
 
 [node name="Entities" type="Node" parent="."]
 
-[node name="SideUI" type="Panel" parent="." node_paths=PackedStringArray("level_num")]
+[node name="SideUI" type="Panel" parent="." node_paths=PackedStringArray("level_num", "hp_bar")]
 anchors_preset = -1
 anchor_left = 0.85200006
 anchor_top = 0.504
@@ -880,6 +880,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("6_ys5p8")
 level_num = NodePath("FloorNum")
+hp_bar = NodePath("StatusPanel/HPBar/HPBarForeground")
 
 [node name="GodButton" type="Button" parent="SideUI"]
 layout_mode = 1
@@ -924,6 +925,28 @@ script = ExtResource("8_etlrv")
 
 [node name="MessageList" type="VBoxContainer" parent="SideUI/MessageContainer"]
 layout_mode = 2
+
+[node name="StatusPanel" type="Panel" parent="SideUI"]
+layout_mode = 0
+offset_left = 22.0
+offset_top = 49.0
+offset_right = 545.0
+offset_bottom = 231.0
+
+[node name="HPBar" type="Node" parent="SideUI/StatusPanel"]
+
+[node name="HPBarBackground" type="ColorRect" parent="SideUI/StatusPanel/HPBar"]
+offset_left = 1454.0
+offset_top = 64.0
+offset_right = 1806.0
+offset_bottom = 88.0
+
+[node name="HPBarForeground" type="ColorRect" parent="SideUI/StatusPanel/HPBar"]
+offset_left = 1458.0
+offset_top = 68.0
+offset_right = 1802.0
+offset_bottom = 84.0
+color = Color(1, 0, 0, 1)
 
 [connection signal="level_changed" from="." to="SideUI" method="_on_dungeon_level_changed"]
 [connection signal="pressed" from="SideUI/GodButton" to="." method="_next_level"]

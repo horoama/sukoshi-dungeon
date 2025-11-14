@@ -16,6 +16,7 @@ const player_definition: EntityDefinition = preload("res://assets/definition/ent
 @onready var player: Entity
 @onready var event_handler: EventHandler = $EventHandler
 @onready var entities: Node = $Entities
+@onready var side_ui: Node = $SideUI
 
 
 var TILE_SIZE = 32
@@ -72,3 +73,4 @@ func spawn_player() -> void:
     var selected = emptys[0]
     player = Entity.new(current_dungeon_map, selected.position, player_definition)
     entities.add_child(player)
+    side_ui.initialize(player)
