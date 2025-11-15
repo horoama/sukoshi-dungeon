@@ -5,6 +5,7 @@ var level: int
 var width: int
 var height: int
 var tiles: Array[Tile]= []  # 2D Array of Tile objects
+var entities : Array[Entity] = []
 
 signal map_updated
 
@@ -16,6 +17,11 @@ func _init(map_width: int, map_height: int, map_level: int) -> void:
     fill_map(Enum.TerrainTileType.WALL)
     # signal emit
     map_updated.emit()
+
+func add_entity(entity: Entity) -> void:
+    entities.append(entity)
+func remove_entity(entity: Entity) -> void:
+    entities.erase(entity)
 
 func fill_map(terrain_tile_type: Enum.TerrainTileType) -> void:
     tiles.clear()

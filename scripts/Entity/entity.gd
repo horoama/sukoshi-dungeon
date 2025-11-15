@@ -25,6 +25,7 @@ func _init(map_data: MapData, grid_position: Vector2i, entity_definition: Entity
     self.map_data = map_data
     self.grid_position = grid_position
     set_entity_type(entity_definition)
+    map_data.add_entity(self)
 
 func set_entity_type(entity_definition: EntityDefinition) -> void:
     _definition = entity_definition

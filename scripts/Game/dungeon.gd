@@ -15,7 +15,7 @@ const player_definition: EntityDefinition = preload("res://assets/definition/ent
 
 @onready var player: Entity
 @onready var event_handler: EventHandler = $EventHandler
-@onready var entities: Node = $Entities
+@onready var entities: Node = $DungeonTileMap/Entities
 @onready var side_ui: Node = $SideUI
 
 
@@ -26,7 +26,7 @@ signal level_changed(new_level: int)
 
 func _physics_process(_delta: float) -> void:
     var action: Action = event_handler.get_action()
-    if action:
+    if action and player:
         action.perform(self, player)
 
 # Called when the node enters the scene tree for the first time.
@@ -74,3 +74,8 @@ func spawn_player() -> void:
     player = Entity.new(current_dungeon_map, selected.position, player_definition)
     entities.add_child(player)
     side_ui.initialize(player)
+
+func remove_entity(entity: Entity) -> void:
+    current_dungeon_map.remove_entity(entity)
+    entities.remove_child(entity)
+    entity.queue_free()
