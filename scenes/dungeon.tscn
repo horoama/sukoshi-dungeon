@@ -866,7 +866,7 @@ tile_set = SubResource("TileSet_hsn05")
 
 [node name="Entities" type="Node" parent="DungeonTileMap"]
 
-[node name="SideUI" type="Panel" parent="." node_paths=PackedStringArray("level_num", "hp_bar")]
+[node name="SideUI" type="Panel" parent="." node_paths=PackedStringArray("level_num", "hp_bar", "hp_label")]
 anchors_preset = -1
 anchor_left = 0.85200006
 anchor_top = 0.504
@@ -881,6 +881,7 @@ grow_vertical = 2
 script = ExtResource("6_ys5p8")
 level_num = NodePath("FloorNum")
 hp_bar = NodePath("StatusPanel/HPBar/HPBarForeground")
+hp_label = NodePath("StatusPanel/HPBar/HPLabel")
 
 [node name="GodButton" type="Button" parent="SideUI"]
 visible = false
