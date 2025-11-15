@@ -4,7 +4,7 @@ extends Node
 @export var hp_bar : ColorRect
 @export var hp_label : Label
 
-var hp_bar_max_width : int
+var hp_bar_max_width : float
 
 func _ready() -> void:
    hp_bar_max_width = hp_bar.size.x
@@ -21,5 +21,5 @@ func _on_dungeon_level_changed(new_level: int) -> void:
 
 func _on_hp_changed(hp: int, max_hp: int) -> void:
     var health_ratio: float = float(hp) / float(max_hp)
-    hp_bar.size.x = int(health_ratio * float(hp_bar_max_width))
+    hp_bar.size.x = int(health_ratio * hp_bar_max_width)
     hp_label.text = "%d / %d" % [hp, max_hp]
