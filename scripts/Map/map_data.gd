@@ -101,3 +101,18 @@ func reveal_tile(grid_pos: Vector2i) -> void:
 func tile_to_local(pos: Vector2i) -> Vector2:
     var local_pos = Vector2(pos.x * TILE_SIZE, pos.y * TILE_SIZE)
     return local_pos
+
+# TODO: for ASTAR pathfinding
+func _update_blocking_info(grid_pos: Vector2i) -> void:
+    # TODO: for ASTAR pathfinding
+    var tile = get_tile(grid_pos)
+    var passable = tile.passable
+    for entity in tile.get_entities():
+        if not entity.passable:
+            passable = false
+    if passable:
+        # mark as non-blocking
+        pass
+    else:
+        # mark as blocking
+        pass

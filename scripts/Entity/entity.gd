@@ -14,6 +14,8 @@ var entity_name: String
 var passable : bool = false
 var ai_type: AIType = AIType.NONE
 var entity_type: EntityType = EntityType.ACTOR
+
+# Entityは所属するMapDataを知っている必要がある
 var map_data: MapData
 
 var fighter_component: FighterComponent
