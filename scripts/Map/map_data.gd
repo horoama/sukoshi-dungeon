@@ -5,7 +5,6 @@ var level: int
 var width: int
 var height: int
 var tiles: Array[Tile]= []  # 2D Array of Tile objects
-var entities : Array[Entity] = []
 
 signal map_updated
 
@@ -18,10 +17,13 @@ func _init(map_width: int, map_height: int, map_level: int) -> void:
     # signal emit
     map_updated.emit()
 
-func add_entity(entity: Entity) -> void:
-    entities.append(entity)
-func remove_entity(entity: Entity) -> void:
-    entities.erase(entity)
+func add_entity(grid_pos: Vector2i, entity: Entity) -> void:
+    var tile = get_tile(grid_pos)
+    tile.add_entity(entity)
+
+func remove_entity(grid_pos: Vector2i, entity: Entity) -> void:
+    var tile = get_tile(grid_pos)
+    tile.remove_entity(entity)
 
 func fill_map(terrain_tile_type: Enum.TerrainTileType) -> void:
     tiles.clear()
@@ -46,19 +48,19 @@ func filter_tiles(func_ref: Callable) -> Array[Tile]:
             result.append(tile)
     return result
 
-func set_tile(x: int, y: int, tile: Tile) -> void:
-    var index = grid_to_index(Vector2i(x, y))
+func set_tile(pos: Vector2i, tile: Tile) -> void:
+    var index = grid_to_index(pos)
     if index >= 0 and index < tiles.size():
         tiles[index] = tile
     map_updated.emit()
 
-func change_terrain_tile_type(x: int, y: int, tile_code: Enum.TerrainTileType) -> void:
-    var tile = get_tile_xy(x, y)
+func change_terrain_tile_type(pos: Vector2i, tile_code: Enum.TerrainTileType) -> void:
+    var tile = get_tile(pos)
     if tile:
         tile.set_terrain_type(tile_code)
 
-func change_object_tile_type(x: int, y: int, tile_code: Enum.ObjectType) -> void:
-    var tile = get_tile_xy(x, y)
+func change_object_tile_type(pos: Vector2i, tile_code: Enum.ObjectType) -> void:
+    var tile = get_tile(pos)
     if tile:
         tile.set_object_type(tile_code)
 
@@ -72,20 +74,26 @@ func index_to_grid(index: int) -> Vector2i:
     var y = index / width
     return Vector2i(x, y)
 
-func is_passable(x: int, y: int) -> bool:
-    var tile = get_tile_xy(x, y)
-    if tile:
-        return tile.passable
-    return false
+func is_passable(grid_pos: Vector2i) -> bool:
+    var tile = get_tile(grid_pos)
+    if tile.passable == false:
+        return false
+    for entity in tile.get_entities():
+        if not entity.passable:
+            return false
+    return true
 
-func is_transparent(x: int, y: int) -> bool:
-    var tile = get_tile_xy(x, y)
-    if tile:
-        return tile.transparent
-    return false
+func is_transparent(grid_pos: Vector2i) -> bool:
+    var tile = get_tile(grid_pos)
+    if tile.transparent == false:
+        return false
+    for entity in tile.get_entities():
+        if not entity.transparent:
+            return false
+    return true
 
-func reveal_tile(x: int, y: int) -> void:
-    var tile = get_tile_xy(x, y)
+func reveal_tile(grid_pos: Vector2i) -> void:
+    var tile = get_tile(grid_pos)
     if tile and tile.state == Enum.TileStatus.HIDDEN:
         tile.state = Enum.TileStatus.VISIBLE
         map_updated.emit()

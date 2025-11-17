@@ -39,14 +39,14 @@ func _ready() -> void:
 
 
 func next_level() -> void:
-    entities.remove_child(player)
+    remove_entity_from_map(current_dungeon_map, player.grid_position, player)
     var next_dungeon_map: MapData = dungeon_generator.generate_cave(dungeon_config, current_dungeon_map)
     # 下り階段を設置
     dungeon_generator.finalize_map(next_dungeon_map)
     # タイルマップを更新
     update_tile_map(next_dungeon_map)
     current_dungeon_map = next_dungeon_map
-    entities.add_child(player)
+    add_entity_to_map(current_dungeon_map, player.grid_position, player)
     # emit signal
     level_changed.emit(current_dungeon_map.level)
 
@@ -72,10 +72,15 @@ func spawn_player() -> void:
     emptys.shuffle()
     var selected = emptys[0]
     player = Entity.new(current_dungeon_map, selected.position, player_definition)
-    entities.add_child(player)
+    add_entity_to_map(current_dungeon_map, selected.position, player)
     side_ui.initialize(player)
 
-func remove_entity(entity: Entity) -> void:
-    current_dungeon_map.remove_entity(entity)
-    entities.remove_child(entity)
-    entity.queue_free()
+func remove_entity_from_map(map_data: MapData, grid_pos: Vector2i, entity: Entity) -> void:
+    var tile = map_data.get_tile(grid_pos)
+    tile.remove_entity(entity)
+    remove_child(entity)
+
+func add_entity_to_map(map_data: MapData, grid_pos: Vector2i, entity: Entity) -> void:
+    var tile = map_data.get_tile(grid_pos)
+    tile.add_entity(entity)
+    add_child(entity)

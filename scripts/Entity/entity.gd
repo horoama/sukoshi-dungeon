@@ -25,7 +25,7 @@ func _init(map_data: MapData, grid_position: Vector2i, entity_definition: Entity
     self.map_data = map_data
     self.grid_position = grid_position
     set_entity_type(entity_definition)
-    map_data.add_entity(self)
+    map_data.get_tile(grid_position).add_entity(self)
 
 func set_entity_type(entity_definition: EntityDefinition) -> void:
     _definition = entity_definition
@@ -40,6 +40,8 @@ func move(offset: Vector2i) -> void:
     # TODO: entityが存在していた場所がpasssibleだったかの確認は必要かも
     # TODO: 移動先についてもentity自体がpassibleか見る必要あり
     # TODO: map_data上にentityも置いてpassibleかのチェックをした方がよさそう
-    map_data.get_tile(grid_position).passable = true
+    if not map_data.is_passable(grid_position + offset):
+        return
+    map_data.remove_entity(grid_position, self)
     grid_position += offset
-    map_data.get_tile(grid_position).passable = false
+    map_data.add_entity(grid_position, self)
