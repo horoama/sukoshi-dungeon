@@ -28,6 +28,12 @@ func take_damage(amount: int) -> void:
     if hp <= 0:
         hp = 0
         print("Player died") # For now, just print a message
+func heal(amount: int) -> int:
+    # hpを回復し、実際に回復した量を返す
+    # max hpを超えて回復しないようにする
+    var old_hp: int = hp
+    hp += amount
+    return hp - old_hp
 
 func get_defence_bonus() -> int:
     return 0

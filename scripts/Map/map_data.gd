@@ -5,6 +5,8 @@ var level: int
 var width: int
 var height: int
 var tiles: Array[Tile]= []  # 2D Array of Tile objects
+var actors: Dictionary[Vector2i, Entity] = {}
+var items: Dictionary[Vector2i, Array] = {}
 
 signal map_updated
 
@@ -18,12 +20,22 @@ func _init(map_width: int, map_height: int, map_level: int) -> void:
     map_updated.emit()
 
 func add_entity(grid_pos: Vector2i, entity: Entity) -> void:
-    var tile = get_tile(grid_pos)
-    tile.add_entity(entity)
+    if entity.entity_type == Entity.EntityType.ACTOR:
+        actors[grid_pos] = entity
+    elif entity.entity_type == Entity.EntityType.ITEM:
+        if not items.has(grid_pos):
+            items[grid_pos] = []
+        items[grid_pos].append(entity)
 
 func remove_entity(grid_pos: Vector2i, entity: Entity) -> void:
-    var tile = get_tile(grid_pos)
-    tile.remove_entity(entity)
+    if entity.entity_type == Entity.EntityType.ACTOR:
+        if actors.has(grid_pos) and actors[grid_pos] == entity:
+            actors.erase(grid_pos)
+    elif entity.entity_type == Entity.EntityType.ITEM:
+        if items.has(grid_pos):
+            items[grid_pos].erase(entity)
+            if not items[grid_pos]:
+                items.erase(grid_pos)
 
 func fill_map(terrain_tile_type: Enum.TerrainTileType) -> void:
     tiles.clear()
@@ -76,19 +88,25 @@ func index_to_grid(index: int) -> Vector2i:
 
 func is_passable(grid_pos: Vector2i) -> bool:
     var tile = get_tile(grid_pos)
-    if tile.passable == false:
+    if not tile or not tile.passable:
         return false
-    for entity in tile.get_entities():
-        if not entity.passable:
+    for item in items.get(grid_pos, []):
+        if not item.passable:
+            return false
+    if actors.get(grid_pos, null):
+        if not actors.get(grid_pos).passable:
             return false
     return true
 
 func is_transparent(grid_pos: Vector2i) -> bool:
     var tile = get_tile(grid_pos)
-    if tile.transparent == false:
+    if not tile or not tile.transparent:
         return false
-    for entity in tile.get_entities():
-        if not entity.transparent:
+    for item in items.get(grid_pos, []):
+        if not item.transparent:
+            return false
+    if actors.get(grid_pos, null):
+        if not actors.get(grid_pos).transparent:
             return false
     return true
 
@@ -116,3 +134,6 @@ func _update_blocking_info(grid_pos: Vector2i) -> void:
     else:
         # mark as blocking
         pass
+
+func update_visuals() -> void:
+    map_updated.emit()

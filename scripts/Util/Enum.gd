@@ -34,19 +34,23 @@ enum Message {
     STAIR_UP_MOVE,
     STAIR_DOWN_NOT_FOUND,
     STAIR_UP_NOT_FOUND,
+    CANNOT_MOVE_THERE,
 }
 
 
 # ===== ヘルパー =====
+## default english messages
 static func message_to_string(m: int) -> String:
     match m:
         Message.STAIR_DOWN_MOVE:
-            return "下の階へ移動します"
+            return "You descend the stairs."
         Message.STAIR_UP_MOVE:
-            return "上の階へ移動します"
+            return "You ascend the stairs."
         Message.STAIR_DOWN_NOT_FOUND:
-            return "ここには下への階段がありません"
+            return "There are no stairs leading down here."
         Message.STAIR_UP_NOT_FOUND:
-            return "ここには上への階段がありません"
+            return "There are no stairs leading up here."
+        Message.CANNOT_MOVE_THERE:
+            return "You cannot move there."
         _:
             return ""

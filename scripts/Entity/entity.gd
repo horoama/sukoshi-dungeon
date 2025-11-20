@@ -4,6 +4,12 @@ extends Sprite2D
 enum AIType {NONE, HOSTILE}
 enum EntityType {CORPSE, ITEM, ACTOR}
 
+const entity_types = {
+    "player" : "res://assets/definition/entity/actor/entity_definition_player.tres",
+    "rice_ball" : "res://assets/definition/entity/item/entity_definition_rice_ball.tres",
+}
+var key: String
+
 var grid_position: Vector2i:
     set(value):
         grid_position = value
@@ -12,6 +18,7 @@ var grid_position: Vector2i:
 var _definition: EntityDefinition
 var entity_name: String
 var passable : bool = false
+var transparent : bool = true
 var ai_type: AIType = AIType.NONE
 var entity_type: EntityType = EntityType.ACTOR
 
@@ -21,18 +28,24 @@ var map_data: MapData
 var fighter_component: FighterComponent
 
 
-func _init(map_data: MapData, grid_position: Vector2i, entity_definition: EntityDefinition) -> void:
+func _init(map_data: MapData, grid_position: Vector2i, key: String) -> void:
     centered = false
     flip_h = true
     self.map_data = map_data
     self.grid_position = grid_position
-    set_entity_type(entity_definition)
-    map_data.get_tile(grid_position).add_entity(self)
+    set_entity_type(key)
+    map_data.add_entity(grid_position, self)
 
-func set_entity_type(entity_definition: EntityDefinition) -> void:
+func set_entity_type(key : String) -> void:
+    self.key = key
+    print("Creating entity of type: %s" % key)
+    var entity_definition: EntityDefinition = load(entity_types[key])
     _definition = entity_definition
     entity_name = entity_definition.name
     texture = entity_definition.texture
+    passable = entity_definition.passable
+    transparent = entity_definition.transparent
+    entity_type = entity_definition.type
     if entity_definition.fighter_definition:
         fighter_component = FighterComponent.new(entity_definition.fighter_definition)
         add_child(fighter_component)

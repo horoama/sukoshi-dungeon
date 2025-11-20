@@ -71,16 +71,14 @@ func spawn_player() -> void:
     # choose random floor
     emptys.shuffle()
     var selected = emptys[0]
-    player = Entity.new(current_dungeon_map, selected.position, player_definition)
+    player = Entity.new(current_dungeon_map, selected.position, "player")
     add_entity_to_map(current_dungeon_map, selected.position, player)
     side_ui.initialize(player)
 
 func remove_entity_from_map(map_data: MapData, grid_pos: Vector2i, entity: Entity) -> void:
-    var tile = map_data.get_tile(grid_pos)
-    tile.remove_entity(entity)
-    remove_child(entity)
+    map_data.remove_entity(grid_pos, entity)
+    entities.remove_child(entity)
 
 func add_entity_to_map(map_data: MapData, grid_pos: Vector2i, entity: Entity) -> void:
-    var tile = map_data.get_tile(grid_pos)
-    tile.add_entity(entity)
-    add_child(entity)
+    map_data.add_entity(grid_pos, entity)
+    entities.add_child(entity)

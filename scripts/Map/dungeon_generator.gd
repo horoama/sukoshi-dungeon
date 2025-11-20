@@ -1,13 +1,10 @@
 class_name DungeonGenerator
 extends Node
 
-
-
-
+var dungeon : Dungeon
 
 func _ready() -> void:
-    pass
-
+    dungeon = get_parent() as Dungeon
 
 # 指定された座標の周囲8方向の壁の数を数える関数
 func count_walls_around(map: MapData, x: int, y: int) -> int:
@@ -255,8 +252,19 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
 ## Return positions of stairs
 func finalize_map(map_data: MapData) -> Array[Tile]:
     # ここに最終的なマップ調整のコードを追加
+    _place_item(map_data)
     return set_next_stairs(map_data, 1)
 
+func _place_item(map_data: MapData) -> void:
+    # TODO: randomな位置にアイテムを配置するコードを追加
+    ## ダミーとして1つのアイテムを配置
+    var emptys = map_data.filter_tiles(func(tile: Tile) -> bool:
+        return tile.terrain_type == Enum.TerrainTileType.FLOOR and tile.object_type == Enum.ObjectType.NONE
+    )
+    emptys.shuffle()
+    var selected = emptys[0]
+    var item = Entity.new(map_data, selected.position, "rice_ball")
+    dungeon.add_entity_to_map(map_data, selected.position, item)
 func set_next_stairs(map_data: MapData, number: int) -> Array[Tile]:
     # 階段を設置するコードを追加
     var empty_tiles: Array[Tile] = []

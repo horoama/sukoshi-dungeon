@@ -14,8 +14,6 @@ var transparent: bool = false
 var terrain_tile := TileDefine.TerrainTile
 var object_tile := TileDefine.ObjectTile
 
-var _entities: Array[Entity] = [] # List of entities on this tile
-
 func _init(grid_position: Vector2i = Vector2i(0, 0), terrain_tile_type: Enum.TerrainTileType = Enum.TerrainTileType.FLOOR) -> void:
     position = grid_position
     set_terrain_type(terrain_tile_type)
@@ -54,14 +52,3 @@ func set_object_type(tile_type: Enum.ObjectType) -> void:
             object_type = Enum.ObjectType.NONE
             object_atlas_coords = object_tile.NONE.ATLAS_COORDS
             passable = false
-
-func add_entity(entity: Entity) -> void:
-    if not _entities.has(entity):
-        _entities.append(entity)
-
-func remove_entity(entity: Entity) -> void:
-    if _entities.has(entity):
-        _entities.erase(entity)
-
-func get_entities() -> Array[Entity]:
-    return _entities

@@ -10,7 +10,7 @@ func _init(dir: int) -> void:
     self.direction = dir
 
 
-func perform(dungeon: Dungeon, entity: Entity) -> void:
+func perform(dungeon: Dungeon, entity: Entity) -> bool:
     # 現在地のタイルを取得
     var map_data: MapData = dungeon.current_dungeon_map
     var tile: Tile = map_data.get_tile(entity.grid_position)
@@ -19,9 +19,11 @@ func perform(dungeon: Dungeon, entity: Entity) -> void:
     match direction:
         Enum.StairDirection.DOWN:
             _use_down_stairs(dungeon, tile)
+            return true
         Enum.StairDirection.UP:
             _use_up_stairs(dungeon, tile)
-
+            return true
+    return false
 
 func _use_down_stairs(dungeon: Dungeon, tile: Tile) -> void:
     # タイル上に DOWN_STAIRS があるかチェック

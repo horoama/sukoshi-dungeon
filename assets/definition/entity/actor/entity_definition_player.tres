@@ -19,4 +19,5 @@ region = Rect2(0, 0, 32, 32)
 script = ExtResource("1_i56r6")
 name = "Player"
 texture = SubResource("AtlasTexture_iqheu")
+type = 2
 fighter_definition = SubResource("Resource_2yv8a")
