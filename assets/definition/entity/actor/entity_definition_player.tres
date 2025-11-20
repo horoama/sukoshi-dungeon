@@ -21,3 +21,4 @@ name = "Player"
 texture = SubResource("AtlasTexture_iqheu")
 type = 2
 fighter_definition = SubResource("Resource_2yv8a")
+inventory_capacity = 10

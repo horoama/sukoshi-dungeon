@@ -4,9 +4,9 @@
 [ext_resource type="Script" uid="uid://blaa73kgju8ys" path="res://scripts/Entity/entity_definition.gd" id="1_jcqrr"]
 [ext_resource type="Texture2D" uid="uid://bmd5efsdnfw68" path="res://assets/sprites/items.png" id="3_d13l8"]
 
-[sub_resource type="Resource" id="Resource_kt7pv"]
+[sub_resource type="Resource" id="Resource_4htua"]
 script = ExtResource("1_4htua")
-healing_amount = 20
+healing_amount = 10
 metadata/_custom_type_script = "uid://dpon5r8x08mid"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ijhvr"]
@@ -19,5 +19,5 @@ name = "rice_ball"
 texture = SubResource("AtlasTexture_ijhvr")
 passable = true
 type = 1
-item_definition = SubResource("Resource_kt7pv")
+consumable_definition = SubResource("Resource_4htua")
 metadata/_custom_type_script = "uid://blaa73kgju8ys"

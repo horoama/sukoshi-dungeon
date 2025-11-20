@@ -26,6 +26,7 @@ var entity_type: EntityType = EntityType.ACTOR
 var map_data: MapData
 
 var fighter_component: FighterComponent
+var inventory_component: InventoryComponent
 
 
 func _init(map_data: MapData, grid_position: Vector2i, key: String) -> void:
@@ -49,6 +50,9 @@ func set_entity_type(key : String) -> void:
     if entity_definition.fighter_definition:
         fighter_component = FighterComponent.new(entity_definition.fighter_definition)
         add_child(fighter_component)
+    if entity_definition.inventory_capacity > 0:
+        var inventory_component = InventoryComponent.new(entity_definition.inventory_capacity)
+        add_child(inventory_component)
 
 
 func move(offset: Vector2i) -> void:

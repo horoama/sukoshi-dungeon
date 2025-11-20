@@ -10,11 +10,9 @@ func activate(action: ItemAction) -> bool:
 
 
 func consume(consumer: Entity) -> void:
-    # TODO: Remove item from inventory and free it
-    pass
-    #var inventory: InventoryComponent = consumer.inventory_component
-    #inventory.items.erase(entity)
-    #entity.queue_free()
+    var inventory: InventoryComponent = consumer.inventory_component
+    inventory.items.erase(entity)
+    entity.queue_free()
 
 
 func get_targeting_radius() -> int:
