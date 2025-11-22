@@ -1,13 +1,18 @@
-[gd_scene load_steps=0 format=3 uid="uid://cs1fxt3yoegty"]
+[gd_scene load_steps=2 format=3 uid="uid://cs1fxt3yoegty"]
 
-[node name="InventoryItem" type="Control"]
+[ext_resource type="Script" uid="uid://djsqdl2mrfho0" path="res://scripts/GUI/inventory_item.gd" id="1_6blu1"]
+
+[node name="InventoryItem" type="Control" node_paths=PackedStringArray("item_name_label", "item_icon_texture_rect")]
 custom_minimum_size = Vector2(500, 64)
 layout_mode = 3
 anchors_preset = 0
 offset_right = 448.0
 offset_bottom = 64.0
+script = ExtResource("1_6blu1")
+item_name_label = NodePath("ItemName")
+item_icon_texture_rect = NodePath("ItemIcon")
 
-[node name="Label" type="Label" parent="."]
+[node name="ItemName" type="Label" parent="."]
 layout_mode = 0
 offset_left = 64.0
 offset_top = 4.0
@@ -17,7 +22,7 @@ theme_override_font_sizes/font_size = 28
 text = "Text item name"
 vertical_alignment = 1
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="ItemIcon" type="TextureRect" parent="."]
 layout_mode = 0
 offset_right = 64.0
 offset_bottom = 64.0

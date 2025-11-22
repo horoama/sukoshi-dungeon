@@ -1,8 +1,9 @@
 class_name InventoryItem
-extends Label
+extends Control
 
-var entity: Entity
+@onready var item_name_label : Label = $ItemName
+@onready var item_icon_texture_rect : TextureRect = $ItemIcon
 
-func _init(item_entity: Entity) -> void:
-    self.entity = item_entity
-    text = item_entity.name
+func setup(item_entity: Entity) -> void:
+    item_name_label.text = item_entity.name
+    item_icon_texture_rect.texture = item_entity.texture
