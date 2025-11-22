@@ -39,13 +39,16 @@ func _ready() -> void:
 
 
 func next_level() -> void:
-    remove_entity_from_map(current_dungeon_map, player.grid_position, player)
+    # 現在のマップからエンティティを削除し表示させないようにする
+    for entity in entities.get_children():
+        remove_entity_from_map(current_dungeon_map, entity.grid_position, entity)
     var next_dungeon_map: MapData = dungeon_generator.generate_cave(dungeon_config, current_dungeon_map)
     # 下り階段を設置
     dungeon_generator.finalize_map(next_dungeon_map)
     # タイルマップを更新
     update_tile_map(next_dungeon_map)
     current_dungeon_map = next_dungeon_map
+    player.map_data = current_dungeon_map
     add_entity_to_map(current_dungeon_map, player.grid_position, player)
     # emit signal
     level_changed.emit(current_dungeon_map.level)

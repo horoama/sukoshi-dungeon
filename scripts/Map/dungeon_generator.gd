@@ -265,6 +265,7 @@ func _place_item(map_data: MapData) -> void:
     var selected = emptys[0]
     var item = Entity.new(map_data, selected.position, "rice_ball")
     dungeon.add_entity_to_map(map_data, selected.position, item)
+
 func set_next_stairs(map_data: MapData, number: int) -> Array[Tile]:
     # 階段を設置するコードを追加
     var empty_tiles: Array[Tile] = []

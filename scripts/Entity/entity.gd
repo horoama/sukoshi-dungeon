@@ -60,6 +60,7 @@ func move(offset: Vector2i) -> void:
     # TODO: 移動先についてもentity自体がpassibleか見る必要あり
     # TODO: map_data上にentityも置いてpassibleかのチェックをした方がよさそう
     if not map_data.is_passable(grid_position + offset):
+        Loggie.info("Cannot move to %s; not passable." % (grid_position + offset))
         return
     map_data.remove_entity(grid_position, self)
     grid_position += offset
