@@ -39,7 +39,6 @@ func _init(map_data: MapData, grid_position: Vector2i, key: String) -> void:
 
 func set_entity_type(key : String) -> void:
     self.key = key
-    print("Creating entity of type: %s" % key)
     var entity_definition: EntityDefinition = load(entity_types[key])
     _definition = entity_definition
     entity_name = entity_definition.name

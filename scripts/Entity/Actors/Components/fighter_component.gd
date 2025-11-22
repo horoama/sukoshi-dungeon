@@ -27,7 +27,7 @@ func take_damage(amount: int) -> void:
     hp -= amount
     if hp <= 0:
         hp = 0
-        print("Player died") # For now, just print a message
+        Loggie.info("Player died") # For now, just print a message
 func heal(amount: int) -> int:
     # hpを回復し、実際に回復した量を返す
     # max hpを超えて回復しないようにする

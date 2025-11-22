@@ -28,17 +28,17 @@ func perform(dungeon: Dungeon, entity: Entity) -> bool:
 func _use_down_stairs(dungeon: Dungeon, tile: Tile) -> void:
     # タイル上に DOWN_STAIRS があるかチェック
     if tile.object_type == Enum.ObjectType.DOWN_STAIRS:
-        print(Enum.message_to_string(Enum.Message.STAIR_DOWN_MOVE))
+        Loggie.info(Enum.message_to_string(Enum.Message.STAIR_DOWN_MOVE))
         dungeon.next_level()
     else:
-        print(Enum.message_to_string(Enum.Message.STAIR_DOWN_NOT_FOUND))
+        Loggie.info(Enum.message_to_string(Enum.Message.STAIR_DOWN_NOT_FOUND))
 
 
 func _use_up_stairs(_dungeon: Dungeon, tile: Tile) -> void:
     # タイル上に UP_STAIRS があるかチェック
     if tile.object_type == Enum.ObjectType.UP_STAIRS:
-        print(Enum.message_to_string(Enum.Message.STAIR_UP_MOVE))
+        Loggie.info(Enum.message_to_string(Enum.Message.STAIR_UP_MOVE))
         # 上り処理（未実装ならコメントのまま）
         # dungeon.previous_level()
     else:
-        print(Enum.message_to_string(Enum.Message.STAIR_UP_NOT_FOUND))
+        Loggie.info(Enum.message_to_string(Enum.Message.STAIR_UP_NOT_FOUND))
