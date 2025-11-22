@@ -43,6 +43,7 @@ func set_entity_type(key : String) -> void:
     var entity_definition: EntityDefinition = load(entity_types[key])
     _definition = entity_definition
     entity_name = entity_definition.name
+    name = entity_name
     texture = entity_definition.texture
     passable = entity_definition.passable
     transparent = entity_definition.transparent
@@ -51,7 +52,7 @@ func set_entity_type(key : String) -> void:
         fighter_component = FighterComponent.new(entity_definition.fighter_definition)
         add_child(fighter_component)
     if entity_definition.inventory_capacity > 0:
-        var inventory_component = InventoryComponent.new(entity_definition.inventory_capacity)
+        inventory_component = InventoryComponent.new(entity_definition.inventory_capacity)
         add_child(inventory_component)
 
 

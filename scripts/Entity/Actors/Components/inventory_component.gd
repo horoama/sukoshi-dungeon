@@ -22,3 +22,7 @@ func add_item(item: Entity) -> bool:
         return false
     items.append(item)
     return true
+
+func can_add_item(item: Entity) -> bool:
+    # TODO: consider item size/weight
+    return items.size() < capacity

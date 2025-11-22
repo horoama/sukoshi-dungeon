@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://cs1fxt3yoegty"]
+[gd_scene load_steps=0 format=3 uid="uid://cs1fxt3yoegty"]
 
 [node name="InventoryItem" type="Control"]
 custom_minimum_size = Vector2(500, 64)
