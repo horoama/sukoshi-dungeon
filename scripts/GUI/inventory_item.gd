@@ -4,6 +4,12 @@ extends Control
 @onready var item_name_label : Label = $ItemName
 @onready var item_icon_texture_rect : TextureRect = $ItemIcon
 
-func setup(item_entity: Entity) -> void:
-    item_name_label.text = item_entity.name
-    item_icon_texture_rect.texture = item_entity.texture
+var item_entity : Entity
+
+func setup(entity: Entity) -> void:
+    self.item_entity = entity
+    item_name_label.text = entity.name
+    item_icon_texture_rect.texture = entity.texture
+
+func _on_item_used() -> void:
+    SignalBus.item_used.emit(item_entity)

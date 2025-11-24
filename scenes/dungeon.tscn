@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://yibjcjia6bm0"]
+[gd_scene load_steps=20 format=3 uid="uid://yibjcjia6bm0"]
 
 [ext_resource type="Script" uid="uid://bppcr8dio1s8y" path="res://scripts/Game/dungeon.gd" id="1_0wj4k"]
 [ext_resource type="Script" uid="uid://boftldsulovox" path="res://scripts/Map/dungeon_generator.gd" id="1_c4wp1"]
@@ -997,6 +997,13 @@ texture = ExtResource("3_fpimf")
 tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_ys5p8")
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5hkx1"]
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0.36244625, 0.07951561, 0.36254984, 1)
+
 [node name="Dungeon" type="Node" node_paths=PackedStringArray("terrain_tile_map", "object_tile_map")]
 script = ExtResource("1_0wj4k")
 dungeon_config = SubResource("Resource_ys5p8")
@@ -1071,17 +1078,19 @@ text = "Basement: 1"
 [node name="MessageContainer" type="ScrollContainer" parent="SideUI"]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.5
-anchor_top = 0.76500005
-anchor_right = 0.5
-anchor_bottom = 0.76500005
-offset_left = -284.0
-offset_top = -232.32007
-offset_right = 284.0
-offset_bottom = 231.67993
+anchor_left = 0.4947183
+anchor_top = 0.7738383
+anchor_right = 0.4947183
+anchor_bottom = 0.7738383
+offset_left = -273.0
+offset_top = -231.93604
+offset_right = 279.0
+offset_bottom = 232.06396
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_5hkx1")
 script = ExtResource("8_etlrv")
+metadata/_edit_use_anchors_ = true
 
 [node name="MessageList" type="VBoxContainer" parent="SideUI/MessageContainer"]
 layout_mode = 2
@@ -1136,6 +1145,7 @@ offset_bottom = 12.400002
 grow_horizontal = 0
 grow_vertical = 2
 size_flags_horizontal = 0
+theme_override_font_sizes/font_size = 20
 text = "/"
 
 [node name="InventoryContainer" type="ScrollContainer" parent="SideUI"]

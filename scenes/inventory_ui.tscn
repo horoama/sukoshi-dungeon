@@ -1,0 +1,48 @@
+[gd_scene format=3 uid="uid://c5t5uokm55rs4"]
+
+[node name="InventoryUi" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InventoryPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.117000006
+anchor_top = 0.148
+anchor_right = 0.117000006
+anchor_bottom = 0.148
+offset_left = -224.64001
+offset_top = -159.84
+offset_right = 223.35999
+offset_bottom = 160.16
+
+[node name="Label" type="Label" parent="InventoryPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.49971431
+anchor_top = 0.078
+anchor_right = 0.49971431
+anchor_bottom = 0.078
+offset_left = -55.87201
+offset_top = -16.960001
+offset_right = 56.12799
+offset_bottom = 17.039999
+theme_override_font_sizes/font_size = 24
+text = "Inventory"
+metadata/_edit_use_anchors_ = true
+
+[node name="VBoxContainer" type="VBoxContainer" parent="InventoryPanel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.5
+anchor_top = 0.55
+anchor_right = 0.5
+anchor_bottom = 0.55
+offset_left = -192.0
+offset_top = -112.0
+offset_right = 192.0
+offset_bottom = 112.0
