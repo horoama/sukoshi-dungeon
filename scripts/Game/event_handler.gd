@@ -16,4 +16,8 @@ func get_action() -> Action:
 	elif Input.is_action_just_pressed("interact"):
 		# Context-sensitive interaction: let InteractAction decide at perform-time
 		action = InteractAction.new()
+	elif Input.is_action_just_pressed("open_inventory"):
+		action = OpenInventoryAction.new()
+	elif Input.is_action_just_pressed("wait"):
+		pass
 	return action
