@@ -12,7 +12,7 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
     var level = 1
     if prev_map != null:
         level = prev_map.level + 1
-    var cave : MapData = RoomGenerator.generate_rooms_and_corridors(
+    var cave : MapData = DungeonAlgorithm.generate_rooms_and_corridors(
         MapData.new(config.map_width, config.map_height, level),
         config.room_attempts,
         config.room_min_size,
@@ -29,7 +29,7 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
 
     # セルオートマトンによる地形の洗練化
     for step in range(config.simulation_steps):
-        cave = CellularAutomata.do_simulation_step(cave)
+        cave = DungeonAlgorithm.do_simulation_step(cave)
 
     
     # 内部領域の総タイル数を計算
@@ -45,7 +45,7 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
 
     # 壁が多すぎる場合、床を増やすのみのセル・オートマトンを実行
     if wall_count > max_wall:
-        cave = CellularAutomata.do_simulation_step(cave, true , false)
+        cave = DungeonAlgorithm.do_simulation_step(cave, true , false)
 
     # 外周の壁を再設定
     for x in range(config.map_width):
@@ -64,12 +64,12 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
                 cave.get_tile_xy(tile.position.x, tile.position.y).set_object_type(Enum.ObjectType.UP_STAIRS)
                 cave.get_tile_xy(tile.position.x, tile.position.y).set_terrain_type(Enum.TerrainTileType.FLOOR)
                 # 周りのタイルに床に変更(外周を除く)
-                var neighbors = MapConnector.get_neighbors(tile.position.x, tile.position.y, config.map_width, config.map_height)
+                var neighbors = DungeonAlgorithm.get_neighbors(tile.position.x, tile.position.y, config.map_width, config.map_height)
                 for n in neighbors:
                     cave.get_tile_xy(n[0], n[1]).set_terrain_type(Enum.TerrainTileType.FLOOR)
 
     # 連結成分を検出し、分断されている場合は通路で接続
-    cave = MapConnector.connect_disconnected_components(cave, config.map_width, config.map_height)
+    cave = DungeonAlgorithm.connect_disconnected_components(cave, config.map_width, config.map_height)
         
     return cave
 
@@ -78,4 +78,4 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
 ## set stair tiles, etc.
 ## Return positions of stairs
 func finalize_map(map_data: MapData) -> Array[Tile]:
-    return ObjectPlacer.finalize_map(dungeon, map_data)
+    return DungeonAlgorithm.finalize_map(dungeon, map_data)
