@@ -4,16 +4,13 @@ extends Sprite2D
 enum AIType {NONE, HOSTILE}
 enum EntityType {CORPSE, ITEM, ACTOR}
 
-const entity_types = {
-    "player" : "res://assets/definition/entity/actor/entity_definition_player.tres",
-    "rice_ball" : "res://assets/definition/entity/item/entity_definition_rice_ball.tres",
-}
 var key: String
 
 var grid_position: Vector2i:
     set(value):
         grid_position = value
-        position = map_data.tile_to_local(grid_position)
+        if map_data:
+            position = map_data.tile_to_local(grid_position)
 
 var _definition: EntityDefinition
 var entity_name: String
@@ -34,12 +31,17 @@ func _init(map_data: MapData, grid_position: Vector2i, key: String) -> void:
     flip_h = true
     self.map_data = map_data
     self.grid_position = grid_position
-    set_entity_type(key)
+    _initialize_from_key(key)
     map_data.add_entity(grid_position, self)
 
-func set_entity_type(key : String) -> void:
+func _initialize_from_key(key: String) -> void:
     self.key = key
-    var entity_definition: EntityDefinition = load(entity_types[key])
+    var definition_path = EntityFactory.get_definition_path(key)
+    if definition_path != "":
+        var entity_definition: EntityDefinition = load(definition_path)
+        _initialize_from_definition(entity_definition)
+
+func _initialize_from_definition(entity_definition: EntityDefinition) -> void:
     _definition = entity_definition
     entity_name = entity_definition.name
     name = entity_name
@@ -47,13 +49,16 @@ func set_entity_type(key : String) -> void:
     passable = entity_definition.passable
     transparent = entity_definition.transparent
     entity_type = entity_definition.type
+
+    _setup_components(entity_definition)
+
+func _setup_components(entity_definition: EntityDefinition) -> void:
     if entity_definition.fighter_definition:
         fighter_component = FighterComponent.new(entity_definition.fighter_definition)
         add_child(fighter_component)
     if entity_definition.inventory_capacity > 0:
         inventory_component = InventoryComponent.new(entity_definition.inventory_capacity)
         add_child(inventory_component)
-
 
 func move(offset: Vector2i) -> void:
     # TODO: entityが存在していた場所がpasssibleだったかの確認は必要かも
