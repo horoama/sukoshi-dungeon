@@ -7,6 +7,14 @@ func _ready() -> void:
     dungeon = get_parent() as Dungeon
 
 # 指定された座標の周囲8方向の壁の数を数える関数
+#
+# この関数はセルオートマトンの計算などで使用され、
+# 対象のセルの周囲（ムーア近傍）にどれだけ壁が存在するかを返します。
+#
+# @param map: 判定対象のマップデータ
+# @param x: 判定するセルのX座標
+# @param y: 判定するセルのY座標
+# @return: 周囲8方向にある壁タイルの数
 func count_walls_around(map: MapData, x: int, y: int) -> int:
     var wall_count: int = 0
     # 8方向の隣接セルをチェック
@@ -23,9 +31,14 @@ func count_walls_around(map: MapData, x: int, y: int) -> int:
     return wall_count
 
 # セルオートマトンのシミュレーションを1ステップ実行する関数
-# map: シミュレーションを行うマップデータ
-# target_floor: 床に対して変更を加えるかどうかのフラグ
-# target_wall: 壁に対して変更を加えるかどうかのフラグ
+#
+# 有名な「4-5ルール」などの変種を用いて、洞窟のような有機的な形状を生成・整地します。
+# 壁が周囲に少なければ床になり、多ければ壁になるというルールを適用します。
+#
+# @param map: シミュレーションを行う元のマップデータ
+# @param target_floor: 元が「床」のセルに対してルールを適用するかどうか
+# @param target_wall: 元が「壁」のセルに対してルールを適用するかどうか
+# @return: 1ステップ更新された新しいマップデータ
 func do_simulation_step(map: MapData, target_floor: bool = true, target_wall: bool = true) -> MapData:
     var new_map_data : MapData = MapData.new(map.width, map.height, map.level)
     for y in range(map.height):
@@ -48,7 +61,15 @@ func do_simulation_step(map: MapData, target_floor: bool = true, target_wall: bo
                     new_map_data.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.FLOOR)
     return new_map_data
 
-# 指定された位置に部屋を配置する関数
+# 指定された位置に矩形の部屋を配置する関数
+#
+# 指定された矩形範囲のタイルを床（FLOOR）に変更します。
+#
+# @param map_data: 変更を加えるマップデータ
+# @param room_x: 部屋の左上のX座標
+# @param room_y: 部屋の左上のY座標
+# @param room_width: 部屋の幅
+# @param room_height: 部屋の高さ
 func place_room(map_data: MapData, room_x: int, room_y: int, room_width: int, room_height: int) -> void:
     for y in range(room_y, room_y + room_height):
         for x in range(room_x, room_x + room_width):
@@ -57,6 +78,14 @@ func place_room(map_data: MapData, room_x: int, room_y: int, room_width: int, ro
                 map_data.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.FLOOR)
 
 # 水平方向の通路を作成する関数
+#
+# 指定されたY座標において、X1からX2までの区間を床に変更します。
+#
+# @param map: 変更を加えるマップデータ
+# @param x1: 開始X座標
+# @param x2: 終了X座標
+# @param y: 通路のY座標
+# @return: 変更後のマップデータ
 func carve_h_corridor(map: MapData, x1: int, x2: int, y: int) -> MapData:
     for x in range(min(x1, x2), max(x1, x2) + 1):
         # マップの範囲内かチェック
@@ -65,6 +94,14 @@ func carve_h_corridor(map: MapData, x1: int, x2: int, y: int) -> MapData:
     return map
 
 # 垂直方向の通路を作成する関数
+#
+# 指定されたX座標において、Y1からY2までの区間を床に変更します。
+#
+# @param map: 変更を加えるマップデータ
+# @param y1: 開始Y座標
+# @param y2: 終了Y座標
+# @param x: 通路のX座標
+# @return: 変更後のマップデータ
 func carve_v_corridor(map: MapData, y1: int, y2: int, x: int) -> MapData:
     for y in range(min(y1, y2), max(y1, y2) + 1):
         # マップの範囲内かチェック
@@ -72,10 +109,16 @@ func carve_v_corridor(map: MapData, y1: int, y2: int, x: int) -> MapData:
             map.get_tile_xy(x, y).set_terrain_type(Enum.TerrainTileType.FLOOR)
     return map
 
-# 部屋と通路を生成する関数
-# rooom_count: 生成する部屋の数
-# room_min_size: 部屋の最小サイズ
-# room_max_size: 部屋の最大サイズ
+# 部屋と通路をランダムに生成する関数
+#
+# 指定された数の部屋をランダムな位置・サイズで配置し、それらを順に通路で繋ぎます。
+# 部屋同士が重ならないように配置を試みます。
+#
+# @param map_data: 生成対象のマップデータ（初期化済みであること）
+# @param room_count: 生成を試みる部屋の最大数
+# @param room_min_size: 部屋の一辺の最小サイズ
+# @param room_max_size: 部屋の一辺の最大サイズ
+# @return: 部屋と通路が配置されたマップデータ
 func generate_rooms_and_corridors(map_data: MapData, room_count: int, room_min_size: int, room_max_size: int) -> MapData:
     # マップを壁で初期化
     var rooms: Array = []
@@ -119,7 +162,16 @@ func generate_rooms_and_corridors(map_data: MapData, room_count: int, room_min_s
             rooms.append(new_room)
     return map_data
 
-# 指定された座標の隣接セル（縦横方向）を取得する関数
+# 指定された座標の隣接セル（縦横4方向）を取得する関数
+#
+# 探索アルゴリズム（BFS/DFSなど）で使用するため、斜め移動を含まない
+# 上下左右の座標リストを返します。
+#
+# @param x: 中心となるセルのX座標
+# @param y: 中心となるセルのY座標
+# @param width: マップの幅（境界チェック用）
+# @param height: マップの高さ（境界チェック用）
+# @return: 隣接する座標([x, y])の配列
 func get_neighbors(x: int, y: int, width: int, height: int) -> Array:
     var neighbors: Array = []
     for dy in [-1, 0, 1]:
@@ -134,7 +186,20 @@ func get_neighbors(x: int, y: int, width: int, height: int) -> Array:
                 neighbors.append([nx, ny])
     return neighbors
 
-# 洞窟を生成するメイン関数
+# 洞窟ダンジョンを生成するメインパイプライン
+#
+# 以下の手順でダンジョンを生成します：
+# 1. 部屋と通路の基本構造を作成
+# 2. ランダムなノイズ（壁）を追加
+# 3. セルオートマトンで地形をスムーズ化
+# 4. 壁の割合を調整
+# 5. 外周を壁で囲む
+# 6. 階段（上り/下り）の配置
+# 7. 分断された領域（連結成分）の接続
+#
+# @param config: ダンジョン生成の設定（サイズ、部屋数、シミュレーション回数など）
+# @param prev_map: 前の階層のマップデータ（階段の接続位置決定に使用）。省略時は新規生成。
+# @return: 完成したマップデータ
 func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
     # 部屋と通路の初期生成
     var level = 1
@@ -247,36 +312,54 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
     return cave
 
 
-# After generate map
-## set stair tiles, etc.
-## Return positions of stairs
+# マップ生成後の最終処理を行う関数
+#
+# アイテムの配置や次の階への階段（DOWN_STAIRS）の配置を行います。
+#
+# @param map_data: 生成されたマップデータ
+# @return: 配置された階段タイルの配列
 func finalize_map(map_data: MapData) -> Array[Tile]:
     # ここに最終的なマップ調整のコードを追加
     _place_item(map_data)
     return set_next_stairs(map_data, 1)
 
+# アイテムをマップ上に配置する内部関数
+#
+# 現在はダミーとして "rice_ball" を1つランダムな床に配置します。
+# TODO: 種類や数のランダム化
 func _place_item(map_data: MapData) -> void:
-    # TODO: randomな位置にアイテムを配置するコードを追加
-    ## ダミーとして1つのアイテムを配置
     var emptys = map_data.filter_tiles(func(tile: Tile) -> bool:
         return tile.terrain_type == Enum.TerrainTileType.FLOOR and tile.object_type == Enum.ObjectType.NONE
     )
+    if emptys.is_empty():
+        return
+
     emptys.shuffle()
     var selected = emptys[0]
     var item = Entity.new(map_data, selected.position, "rice_ball")
     dungeon.add_entity_to_map(map_data, selected.position, item)
 
+# 次の階への階段を設置する関数
+#
+# 上り階段（UP_STAIRS）から一定距離（20タイル分）離れた場所に下り階段を配置します。
+# これにより、プレイヤーが即座に次の階へ移動してしまうのを防ぎます。
+#
+# @param map_data: マップデータ
+# @param number: 設置する階段の数
+# @return: 設置された階段タイルの配列
 func set_next_stairs(map_data: MapData, number: int) -> Array[Tile]:
-    # 階段を設置するコードを追加
     var empty_tiles: Array[Tile] = []
     var stair_tiles: Array[Tile] = []
+
+    # 既に存在する上り階段を取得
     var up_stairs: Array[Tile] = map_data.filter_tiles(func(tile: Tile) -> bool:
         return tile.object_type == Enum.ObjectType.UP_STAIRS
     )
+
     for tile in map_data.tiles:
         # 階段設置用の空きタイルを収集
         if tile.terrain_type == Enum.TerrainTileType.FLOOR or tile.object_type == Enum.ObjectType.UP_STAIRS:
-            # UP_STAIRSから10タイル以内のタイルは除外
+            # UP_STAIRSから一定距離離れているかチェック
             var distance_ok = true
             for up_stair in up_stairs:
                 if up_stair.position.distance_to(tile.position) <= 20:
