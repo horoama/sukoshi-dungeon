@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://yibjcjia6bm0"]
+[gd_scene load_steps=24 format=3 uid="uid://yibjcjia6bm0"]
 
 [ext_resource type="Script" uid="uid://bppcr8dio1s8y" path="res://scripts/Game/dungeon.gd" id="1_0wj4k"]
 [ext_resource type="Script" uid="uid://boftldsulovox" path="res://scripts/Map/dungeon_generator.gd" id="1_c4wp1"]
@@ -11,6 +11,8 @@
 [ext_resource type="Script" uid="uid://b474rmtgk2tkt" path="res://scripts/GUI/inventory_container.gd" id="9_tkjml"]
 [ext_resource type="PackedScene" uid="uid://cs1fxt3yoegty" path="res://scenes/InventoryItem.tscn" id="10_5hkx1"]
 [ext_resource type="Script" uid="uid://dyhe4anwvg0d0" path="res://scripts/GUI/game_menu.gd" id="11_pnxem"]
+[ext_resource type="Script" uid="uid://cjr1sxpmvkn33" path="res://scripts/GUI/inventory.gd" id="12_7wjui"]
+[ext_resource type="PackedScene" uid="uid://b4biws71ownn7" path="res://scenes/item_in_inventory_menu.tscn" id="13_7a5bf"]
 
 [sub_resource type="Resource" id="Resource_ys5p8"]
 script = ExtResource("2_fvacq")
@@ -1177,7 +1179,7 @@ metadata/_edit_use_anchors_ = true
 [node name="Inventory" type="VBoxContainer" parent="SideUI/InventoryContainer"]
 layout_mode = 2
 
-[node name="GameMenuUI" type="Control" parent="." node_paths=PackedStringArray("tabs", "inventory_tab")]
+[node name="GameMenuUI" type="Control" parent="." node_paths=PackedStringArray("tabs")]
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -1188,7 +1190,6 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("11_pnxem")
 tabs = NodePath("GameMenuPanel/TabContainer")
-inventory_tab = NodePath("GameMenuPanel/TabContainer/Inventory")
 
 [node name="GameMenuPanel" type="Panel" parent="GameMenuUI"]
 layout_mode = 1
@@ -1221,8 +1222,10 @@ grow_vertical = 2
 theme_override_font_sizes/font_size = 31
 current_tab = 0
 
-[node name="Inventory" type="TabBar" parent="GameMenuUI/GameMenuPanel/TabContainer"]
+[node name="Inventory" type="Control" parent="GameMenuUI/GameMenuPanel/TabContainer"]
 layout_mode = 2
+script = ExtResource("12_7wjui")
+item_scene = ExtResource("13_7a5bf")
 metadata/_tab_index = 0
 
 [node name="ItemListBackground" type="ColorRect" parent="GameMenuUI/GameMenuPanel/TabContainer/Inventory"]
@@ -1239,20 +1242,21 @@ offset_bottom = 328.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ItemListContainer" type="VBoxContainer" parent="GameMenuUI/GameMenuPanel/TabContainer/Inventory/ItemListBackground"]
+[node name="InventoryListScrollContainer" type="ScrollContainer" parent="GameMenuUI/GameMenuPanel/TabContainer/Inventory"]
 layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.272
+anchors_preset = 4
 anchor_top = 0.5
-anchor_right = 0.272
 anchor_bottom = 0.5
-offset_left = -280.344
-offset_top = -280.0
-offset_right = 279.65598
-offset_bottom = 296.0
+offset_left = 48.0
+offset_top = -314.0
+offset_right = 624.0
+offset_bottom = 313.05884
 grow_vertical = 2
 
-[node name="Skill" type="TabBar" parent="GameMenuUI/GameMenuPanel/TabContainer"]
+[node name="ItemListContainer" type="VBoxContainer" parent="GameMenuUI/GameMenuPanel/TabContainer/Inventory/InventoryListScrollContainer"]
+layout_mode = 2
+
+[node name="Skill" type="Control" parent="GameMenuUI/GameMenuPanel/TabContainer"]
 visible = false
 layout_mode = 2
 metadata/_tab_index = 1

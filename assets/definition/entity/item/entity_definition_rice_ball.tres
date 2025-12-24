@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="EntityDefinition" load_steps=6 format=3 uid="uid://dsenw6l6ffie8"]
 
-[ext_resource type="Script" path="res://scripts/Entity/Actors/Components/ComponentDefinitions/healing_consumable_component_definition.gd" id="1_4htua"]
+[ext_resource type="Script" uid="uid://dpon5r8x08mid" path="res://scripts/Entity/Actors/Components/ComponentDefinitions/healing_consumable_component_definition.gd" id="1_4htua"]
 [ext_resource type="Script" uid="uid://blaa73kgju8ys" path="res://scripts/Entity/entity_definition.gd" id="1_jcqrr"]
 [ext_resource type="Texture2D" uid="uid://bmd5efsdnfw68" path="res://assets/sprites/items.png" id="3_d13l8"]
 
@@ -16,6 +16,7 @@ region = Rect2(32, 800, 32, 32)
 [resource]
 script = ExtResource("1_jcqrr")
 name = "rice_ball"
+description = "heal hp"
 texture = SubResource("AtlasTexture_ijhvr")
 passable = true
 type = 1

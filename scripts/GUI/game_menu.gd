@@ -2,7 +2,6 @@ class_name GameMenu
 extends Control
 
 @export var tabs : TabContainer
-@export var inventory_tab : TabBar
 
 const TAB_INDEX = 0
 
