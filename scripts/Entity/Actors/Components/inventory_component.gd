@@ -15,7 +15,7 @@ func drop(item: Entity) -> void:
     item.grid_position = entity.grid_position
     map_data.add_entity(item.grid_position, item)
     entity.get_parent().add_child(item)
-    # TODO: message
+    MessageContainer.send_message("You dropped %s." % item.name)
 
 func add_item(item: Entity) -> bool:
     if items.size() >= capacity:
