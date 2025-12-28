@@ -17,6 +17,8 @@ const player_definition: EntityDefinition = preload("res://assets/definition/ent
 @onready var event_handler: EventHandler = $EventHandler
 @onready var entities: Node = $DungeonTileMap/Entities
 @onready var side_ui: Node = $SideUI
+@onready var _game_menu_scene: PackedScene = preload("res://scenes/game_menu_ui.tscn")
+@onready var game_menu: Node = null
 
 
 var TILE_SIZE = 32
@@ -36,6 +38,10 @@ func _ready() -> void:
     # タイルマップを更新
     update_tile_map(current_dungeon_map)
     spawn_player()
+    # Instantiate game menu UI and add to scene tree (hidden by default)
+    var gm = _game_menu_scene.instantiate()
+    add_child(gm)
+    game_menu = gm
 
 
 func next_level() -> void:

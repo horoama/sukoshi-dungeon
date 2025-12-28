@@ -1,0 +1,97 @@
+[gd_scene load_steps=5 format=3 uid="uid://chx2j858me0fx"]
+
+[ext_resource type="Script" path="res://scripts/GUI/game_menu.gd" id="1_nnq7w"]
+[ext_resource type="Script" path="res://scripts/GUI/inventory.gd" id="2_qfluu"]
+[ext_resource type="PackedScene" uid="uid://b4biws71ownn7" path="res://scenes/item_in_inventory_menu.tscn" id="3_yeb3h"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pnxem"]
+bg_color = Color(0, 0, 0.2, 0.8980392)
+border_width_left = 5
+border_width_top = 5
+border_width_right = 5
+border_width_bottom = 5
+border_color = Color(0, 0, 0, 1)
+shadow_color = Color(0.089784496, 0.0845486, 0.07046323, 0.6)
+shadow_size = 15
+
+[node name="GameMenuUI" type="Control" node_paths=PackedStringArray("tabs")]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_nnq7w")
+tabs = NodePath("GameMenuPanel/TabContainer")
+
+[node name="GameMenuPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -640.0
+offset_top = -400.0
+offset_right = 640.0
+offset_bottom = 400.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_pnxem")
+
+[node name="TabContainer" type="TabContainer" parent="GameMenuPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -576.0
+offset_top = -378.0
+offset_right = 576.0
+offset_bottom = 378.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 31
+current_tab = 0
+
+[node name="Inventory" type="Control" parent="GameMenuPanel/TabContainer"]
+layout_mode = 2
+script = ExtResource("2_qfluu")
+item_scene = ExtResource("3_yeb3h")
+metadata/_tab_index = 0
+
+[node name="ItemListBackground" type="ColorRect" parent="GameMenuPanel/TabContainer/Inventory"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -544.0
+offset_top = -328.0
+offset_right = 544.0
+offset_bottom = 328.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="InventoryListScrollContainer" type="ScrollContainer" parent="GameMenuPanel/TabContainer/Inventory"]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 48.0
+offset_top = -314.0
+offset_right = 624.0
+offset_bottom = 313.05884
+grow_vertical = 2
+
+[node name="ItemListContainer" type="VBoxContainer" parent="GameMenuPanel/TabContainer/Inventory/InventoryListScrollContainer"]
+layout_mode = 2
+
+[node name="Skill" type="Control" parent="GameMenuPanel/TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
