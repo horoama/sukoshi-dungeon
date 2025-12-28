@@ -16,7 +16,6 @@ region = Rect2(32, 800, 32, 32)
 [resource]
 script = ExtResource("1_jcqrr")
 name = "rice_ball"
-description = "heal hp"
 texture = SubResource("AtlasTexture_ijhvr")
 passable = true
 type = 1
