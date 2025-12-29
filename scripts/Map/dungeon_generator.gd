@@ -66,9 +66,10 @@ func _do_simulation_step(map: MapData, config: DungeonConfig, target_floor: bool
 # 以下の手順でダンジョンを生成します：
 # 1. ランダムなノイズ（壁）で初期化
 # 2. セルオートマトンで地形をスムーズ化
-# 3. 外周を壁で囲む
-# 4. 階段（上り/下り）の接続
-# 5. 分断された領域（連結成分）の接続
+# 3. 床の割合が基準値を満たすまで、壁を削って床を増やす
+# 4. 外周を壁で囲む
+# 5. 階段（上り/下り）の接続
+# 6. 分断された領域（連結成分）の接続
 #
 # @param config: ダンジョン生成の設定（サイズ、部屋数、シミュレーション回数など）
 # @param prev_map: 前の階層のマップデータ（階段の接続位置決定に使用）。省略時は新規生成。
@@ -88,7 +89,35 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
     for step in range(config.simulation_steps):
         map_data = _do_simulation_step(map_data, config)
 
-    # 壁の量を調整（多すぎる場合は減らす）
+    # 床が少なすぎる場合の調整（壁を削る）
+    var adjust_steps = 0
+    var total_tiles = config.map_width * config.map_height
+
+    # 調整用に設定を複製して、生存閾値を上げる（より壁が崩れやすくする）
+    var erosion_config = config.duplicate()
+    erosion_config.survival_limit += 1
+
+    while adjust_steps < config.max_adjust_steps:
+        var floor_count = 0
+        for t in map_data.tiles:
+             if t.terrain_type == Enum.TerrainTileType.FLOOR:
+                 floor_count += 1
+        var ratio = float(floor_count) / float(total_tiles)
+
+        if ratio >= config.min_floor_rate:
+            break
+
+        Loggie.info("Floor ratio %.2f is below min %.2f. Applying wall erosion step %d." % [ratio, config.min_floor_rate, adjust_steps + 1])
+        # 壁のみを対象に、生存チェックだけ行う（床を増やす）
+        # 調整用のコンフィグを使用することで、安定状態から強制的に変化させる
+        map_data = _do_simulation_step(map_data, erosion_config, false, true)
+        adjust_steps += 1
+
+    if adjust_steps > 0:
+        Loggie.info("Completed adjustment with %d steps." % adjust_steps)
+
+    # 壁の量を調整（多すぎる場合は減らす - 既存ロジック）
+    # ※上記のループで床を増やしているので、ここでのチェックは冗長かもしれないが、念のため残すか、あるいは統合する
     map_data = _adjust_wall_amount(map_data, config)
 
     # 外周を壁で囲む

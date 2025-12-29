@@ -21,3 +21,7 @@ class_name DungeonConfig
 @export var birth_limit: int = 5
 # 階段間の最小距離
 @export var min_stair_distance: int = 20
+# 床の最小割合（マップ全体のタイル数に対する床の割合）。これ未満の場合は、壁を削って床を増やします。
+@export var min_floor_rate: float = 0.3
+# 床不足時の最大調整ステップ数
+@export var max_adjust_steps: int = 10
