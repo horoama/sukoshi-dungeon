@@ -124,7 +124,7 @@ func _adjust_wall_amount(map_data: MapData, config: DungeonConfig) -> MapData:
 	var max_wall = total * config.wall_rate
 	if wall_count > max_wall:
 		# 壁のみを対象に、生存チェックだけ行う（床を増やす）
-		return _do_simulation_step(map_data, config, true, false)
+        return _do_simulation_step(map_data, config, false, true)
 	return map_data
 
 # マップの外周を壁にする関数
