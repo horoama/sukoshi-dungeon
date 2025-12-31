@@ -32,8 +32,10 @@ func perform(dungeon: Dungeon, entity: Entity) -> bool:
     # 移動不可の判定
     if not destination_tile or not map_data.is_passable(destination):
         MessageContainer.send_message(Enum.message_to_string(Enum.Message.CANNOT_MOVE_THERE))
+        Loggie.debug("Movement blocked: " + str(entity.name) + " tried to move to " + str(destination))
         return false
 
     # 移動処理
     entity.move(offset)
+    Loggie.debug("Entity " + str(entity.name) + " moved to " + str(destination))
     return true

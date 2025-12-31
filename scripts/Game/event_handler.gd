@@ -36,4 +36,7 @@ func get_action() -> Action:
         action = OpenInventoryAction.new()
     elif Input.is_action_just_pressed("wait"):
         pass
+
+    if action:
+        Loggie.debug("Action generated: " + str(action))
     return action

@@ -10,6 +10,7 @@ func activate(action: ItemAction) -> bool:
 
 
 func consume(consumer: Entity) -> void:
+    Loggie.debug("Consuming item: " + entity.name)
     var inventory: InventoryComponent = consumer.inventory_component
     inventory.items.erase(entity)
     entity.queue_free()

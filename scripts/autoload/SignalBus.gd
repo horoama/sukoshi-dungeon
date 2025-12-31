@@ -6,3 +6,6 @@ signal message_sent(message, color)
 signal update_player_inventory(item_list)
 signal item_used(inventory_item: Entity)
 signal open_inventory()
+
+func _ready():
+    Loggie.info("SignalBus initialized")

@@ -27,6 +27,8 @@ func change_state(new_state: TurnState) -> void:
     if current_state == new_state:
         return
 
+    Loggie.debug("Turn changing: " + str(current_state) + " -> " + str(new_state))
+
     # 現在の状態の終了通知
     turn_ended.emit(current_state)
 
