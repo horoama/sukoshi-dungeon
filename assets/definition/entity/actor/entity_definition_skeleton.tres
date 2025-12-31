@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EntityDefinition" load_steps=6 format=3 uid="uid://1jltjvg1wne"]
+
+[ext_resource type="Script" uid="uid://bhyqm37wvdhwt" path="res://scripts/Entity/Actors/Components/ComponentDefinitions/fighter_component_definition.gd" id="1_kpgyd"]
+[ext_resource type="Script" uid="uid://blaa73kgju8ys" path="res://scripts/Entity/entity_definition.gd" id="2_vfurq"]
+[ext_resource type="Texture2D" uid="uid://b2sjomgx07p7u" path="res://assets/sprites/monsters.png" id="3_kx3m1"]
+
+[sub_resource type="Resource" id="Resource_2yv8a"]
+script = ExtResource("1_kpgyd")
+max_hp = 5
+base_defense = 1
+base_power = 1
+metadata/_custom_type_script = "uid://bhyqm37wvdhwt"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_evanh"]
+atlas = ExtResource("3_kx3m1")
+region = Rect2(0, 128, 32, 32)
+
+[resource]
+script = ExtResource("2_vfurq")
+name = "skeleton"
+texture = SubResource("AtlasTexture_evanh")
+type = 2
+fighter_definition = SubResource("Resource_2yv8a")
+inventory_capacity = 10
