@@ -201,6 +201,7 @@ func get_neighbors(x: int, y: int, width: int, height: int) -> Array:
 # @param prev_map: 前の階層のマップデータ（階段の接続位置決定に使用）。省略時は新規生成。
 # @return: 完成したマップデータ
 func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
+    Loggie.info("Generating cave...")
     # 部屋と通路の初期生成
     var level = 1
     if prev_map != null:
@@ -319,6 +320,7 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
 # @param map_data: 生成されたマップデータ
 # @return: 配置された階段タイルの配列
 func finalize_map(map_data: MapData) -> Array[Tile]:
+    Loggie.debug("Finalizing map...")
     # ここに最終的なマップ調整のコードを追加
     _place_item(map_data)
     return set_next_stairs(map_data, 1)

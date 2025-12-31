@@ -45,6 +45,7 @@ func _init(_definition: FighterComponentDefinition) -> void:
 # @param amount: 受けるダメージ量
 func take_damage(amount: int) -> void:
     hp -= amount
+    Loggie.debug("Took " + str(amount) + " damage. HP: " + str(hp))
     if hp <= 0:
         hp = 0
         Loggie.info("Player died") # 現在はログ出力のみ
@@ -58,7 +59,9 @@ func take_damage(amount: int) -> void:
 func heal(amount: int) -> int:
     var old_hp: int = hp
     hp += amount
-    return hp - old_hp
+    var healed = hp - old_hp
+    Loggie.debug("Healed " + str(healed) + ". HP: " + str(hp))
+    return healed
 
 # 防御力ボーナスを取得する（拡張用）
 #

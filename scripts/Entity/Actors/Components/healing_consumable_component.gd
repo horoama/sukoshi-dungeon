@@ -13,5 +13,6 @@ func activate(action: ItemAction) -> bool:
 	var amount_recovered: int = consumer.fighter_component.heal(amount)
 	if amount_recovered > 0:
 		MessageContainer.send_message("Your wounds feel better! You recover %d HP." % amount_recovered, )
+		Loggie.info("Used healing item. Recovered %d HP." % amount_recovered)
 		return true
 	return false

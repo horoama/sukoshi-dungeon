@@ -13,6 +13,7 @@ var enemies_list = []
 # 現在はプレースホルダーですが、将来的にセーブデータのリセットや
 # 初期状態のセットアップを行う予定です。
 func start_new_game():
+    Loggie.info("Starting new game")
     pass
 
 # プレイヤーのターン終了時の処理
@@ -21,3 +22,6 @@ func start_new_game():
 # ターン経過による状態変化の更新などを行う予定です。
 func end_player_turn():
     pass
+
+func _ready():
+    Loggie.info("GameManager initialized")
