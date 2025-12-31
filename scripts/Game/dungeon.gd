@@ -9,6 +9,8 @@ extends Node
 @export var dungeon_config: DungeonConfig
 # 現在のレベルのダンジョンデータ
 var current_dungeon_map: MapData
+# ターン管理
+var turn_manager: TurnManager
 # タイルマップレイヤーへの参照（地形用とオブジェクト用）
 @export var terrain_tile_map: TileMapLayer
 @export var object_tile_map: TileMapLayer
@@ -41,12 +43,23 @@ signal level_changed(new_level: int)
 func _physics_process(_delta: float) -> void:
     var action: Action = event_handler.get_action()
     if action and player:
-        action.perform(self, player)
+        var result = action.perform(self, player)
+        # アクションが成功した場合、プレイヤーのターンを終了して敵のターンへ移行
+        if result:
+            turn_manager.change_state(TurnManager.TurnState.ENEMY_TURN)
 
 # 初期化処理
 #
 # 初回のダンジョン生成、マップ表示更新、プレイヤーの配置、UIの初期化を行います。
 func _ready() -> void:
+    # ターンマネージャーの初期化と設定
+    turn_manager = TurnManager.new()
+    add_child(turn_manager)
+    event_handler.turn_manager = turn_manager
+
+    # ターン状態変更時のシグナル接続
+    turn_manager.turn_started.connect(_on_turn_started)
+
     current_dungeon_map = dungeon_generator.generate_cave(dungeon_config, null)
     dungeon_generator.finalize_map(current_dungeon_map)
     # タイルマップを更新
@@ -135,3 +148,25 @@ func remove_entity_from_map(map_data: MapData, grid_pos: Vector2i, entity: Entit
 func add_entity_to_map(map_data: MapData, grid_pos: Vector2i, entity: Entity) -> void:
     map_data.add_entity(grid_pos, entity)
     entities.add_child(entity)
+
+
+# ターン開始時のハンドラ
+#
+# @param state: 開始したターンの状態
+func _on_turn_started(state: TurnManager.TurnState) -> void:
+    match state:
+        TurnManager.TurnState.PLAYER_TURN:
+            pass
+            # プレイヤーの入力待ち状態になります（EventHandlerで制御）
+        TurnManager.TurnState.ENEMY_TURN:
+            # 敵の処理（現在は仮実装）
+            # 将来的にはここで敵のAI処理を行う
+            _process_enemy_turn()
+
+# 敵のターン処理
+#
+# 現時点では即座にプレイヤーのターンに戻します。
+func _process_enemy_turn() -> void:
+    # TODO: 敵の行動処理を実装
+    # 敵の行動が終わったらプレイヤーターンに戻す
+    turn_manager.change_state(TurnManager.TurnState.PLAYER_TURN)
