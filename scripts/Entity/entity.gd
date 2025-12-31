@@ -13,6 +13,7 @@ enum EntityType {CORPSE, ITEM, ACTOR}
 const entity_types = {
     "player" : "res://assets/definition/entity/actor/entity_definition_player.tres",
     "rice_ball" : "res://assets/definition/entity/item/entity_definition_rice_ball.tres",
+    "skeleton" : "res://assets/definition/entity/actor/entity_definition_skeleton.tres",
 }
 var key: String
 

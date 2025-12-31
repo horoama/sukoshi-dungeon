@@ -323,7 +323,33 @@ func finalize_map(map_data: MapData) -> Array[Tile]:
     Loggie.debug("Finalizing map...")
     # ここに最終的なマップ調整のコードを追加
     _place_item(map_data)
+    _place_enemies(map_data)
     return set_next_stairs(map_data, 1)
+
+# 敵をマップ上に配置する内部関数
+#
+# 1階につき1体から3体のスケルトンをランダムに配置します。
+#
+# @param map_data: マップデータ
+func _place_enemies(map_data: MapData) -> void:
+    var emptys = map_data.filter_tiles(func(tile: Tile) -> bool:
+        # 床であり、オブジェクトがなく、アクターもいない場所
+        return tile.terrain_type == Enum.TerrainTileType.FLOOR and \
+               tile.object_type == Enum.ObjectType.NONE and \
+               not map_data.actors.has(tile.position)
+    )
+    if emptys.is_empty():
+        return
+
+    emptys.shuffle()
+
+    # 1体から3体をスポーンさせる
+    var enemy_count = randi_range(1, 3)
+
+    for i in range(min(enemy_count, emptys.size())):
+        var selected = emptys[i]
+        var enemy = Entity.new(map_data, selected.position, "skeleton")
+        dungeon.add_entity_to_map(map_data, selected.position, enemy)
 
 # アイテムをマップ上に配置する内部関数
 #
