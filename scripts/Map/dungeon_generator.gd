@@ -318,20 +318,25 @@ func generate_cave(config: DungeonConfig, prev_map: MapData = null) -> MapData:
 # アイテムの配置や次の階への階段（DOWN_STAIRS）の配置を行います。
 #
 # @param map_data: 生成されたマップデータ
+# @param config: ダンジョン生成設定
 # @return: 配置された階段タイルの配列
-func finalize_map(map_data: MapData) -> Array[Tile]:
+func finalize_map(map_data: MapData, config: DungeonConfig) -> Array[Tile]:
     Loggie.debug("Finalizing map...")
     # ここに最終的なマップ調整のコードを追加
     _place_item(map_data)
-    _place_enemies(map_data)
+    _place_enemies(map_data, config)
     return set_next_stairs(map_data, 1)
 
 # 敵をマップ上に配置する内部関数
 #
-# 1階につき1体から3体のスケルトンをランダムに配置します。
+# Configに基づいて敵をランダムに配置します。
 #
 # @param map_data: マップデータ
-func _place_enemies(map_data: MapData) -> void:
+# @param config: ダンジョン生成設定
+func _place_enemies(map_data: MapData, config: DungeonConfig) -> void:
+    if config.enemies.is_empty():
+        return
+
     var emptys = map_data.filter_tiles(func(tile: Tile) -> bool:
         # 床であり、オブジェクトがなく、アクターもいない場所
         return tile.terrain_type == Enum.TerrainTileType.FLOOR and \
@@ -343,12 +348,15 @@ func _place_enemies(map_data: MapData) -> void:
 
     emptys.shuffle()
 
-    # 1体から3体をスポーンさせる
-    var enemy_count = randi_range(1, 3)
+    # 設定に基づいて敵の数を決定
+    var enemy_count = randi_range(config.enemy_count_min, config.enemy_count_max)
 
     for i in range(min(enemy_count, emptys.size())):
         var selected = emptys[i]
-        var enemy = Entity.new(map_data, selected.position, "skeleton")
+        # 設定された敵リストからランダムに選択
+        var enemy_key = config.enemies.pick_random()
+        # TODO: entity_typesに含まれているかチェックしたほうが安全かも
+        var enemy = Entity.new(map_data, selected.position, enemy_key)
         dungeon.add_entity_to_map(map_data, selected.position, enemy)
 
 # アイテムをマップ上に配置する内部関数
