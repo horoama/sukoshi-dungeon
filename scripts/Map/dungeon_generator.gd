@@ -327,6 +327,7 @@ func finalize_map(map_data: MapData, config: DungeonConfig) -> Array[Tile]:
     _place_enemies(map_data, config)
     return set_next_stairs(map_data, 1)
 
+
 # 敵をマップ上に配置する内部関数
 #
 # Configに基づいて敵をランダムに配置します。
