@@ -35,6 +35,9 @@ enum Message {
     STAIR_DOWN_NOT_FOUND,
     STAIR_UP_NOT_FOUND,
     CANNOT_MOVE_THERE,
+    ATTACK_DESCRIPTION,
+    DAMAGE_DEALT,
+    NO_DAMAGE,
 }
 
 
@@ -52,5 +55,11 @@ static func message_to_string(m: int) -> String:
             return "There are no stairs leading up here."
         Message.CANNOT_MOVE_THERE:
             return "You cannot move there."
+        Message.ATTACK_DESCRIPTION:
+            return "%s attacks %s!"
+        Message.DAMAGE_DEALT:
+            return "%d damage!"
+        Message.NO_DAMAGE:
+            return "No damage."
         _:
             return ""

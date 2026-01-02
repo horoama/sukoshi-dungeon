@@ -48,7 +48,12 @@ func take_damage(amount: int) -> void:
     Loggie.debug("Took " + str(amount) + " damage. HP: " + str(hp))
     if hp <= 0:
         hp = 0
-        Loggie.info("Player died") # 現在はログ出力のみ
+        # 死亡処理 (現在はログ出力のみ)
+        Loggie.info(entity.name + " has died.")
+        # 削除処理(Actorsリストから削除)
+        var map_data: MapData = entity.map_data
+        map_data.remove_entity(entity.grid_position, entity)
+        entity.queue_free()
 
 # HPを回復する処理
 #
