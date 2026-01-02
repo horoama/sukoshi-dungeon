@@ -25,14 +25,14 @@ func perform(dungeon: Dungeon, entity: Entity) -> bool:
 
     var damage: int = entity.fighter_component.power - target.fighter_component.defense
 
-    var attack_desc: String = "%sは%sを攻撃した！" % [entity.name, target.name]
+    var attack_desc: String = Enum.message_to_string(Enum.Message.ATTACK_DESCRIPTION) % [entity.name, target.name]
     var damage_desc: String
 
     if damage > 0:
-        damage_desc = "%dポイントのダメージ！" % damage
+        damage_desc = Enum.message_to_string(Enum.Message.DAMAGE_DEALT) % damage
         target.fighter_component.take_damage(damage)
     else:
-        damage_desc = "しかしダメージは与えられなかった。"
+        damage_desc = Enum.message_to_string(Enum.Message.NO_DAMAGE)
         target.fighter_component.take_damage(0)
 
     MessageContainer.send_message(attack_desc + "\n" + damage_desc)
