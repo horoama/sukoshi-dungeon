@@ -8,3 +8,8 @@ class_name DungeonConfig
 @export var room_attempts: int = 3
 @export var room_min_size: int = 3
 @export var room_max_size: int = 6
+
+@export_group("Enemies")
+@export var enemies: Array[String] = ["skeleton"]
+@export var enemy_count_min: int = 1
+@export var enemy_count_max: int = 3

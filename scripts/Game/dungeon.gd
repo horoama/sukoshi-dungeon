@@ -61,7 +61,7 @@ func _ready() -> void:
     turn_manager.turn_started.connect(_on_turn_started)
 
     current_dungeon_map = dungeon_generator.generate_cave(dungeon_config, null)
-    dungeon_generator.finalize_map(current_dungeon_map)
+    dungeon_generator.finalize_map(current_dungeon_map, dungeon_config)
     # タイルマップを更新
     update_tile_map(current_dungeon_map)
     spawn_player()
@@ -81,7 +81,7 @@ func next_level() -> void:
 
     # 新しいマップを生成（前のマップの情報を一部引き継ぐ）
     var next_dungeon_map: MapData = dungeon_generator.generate_cave(dungeon_config, current_dungeon_map)
-    dungeon_generator.finalize_map(next_dungeon_map)
+    dungeon_generator.finalize_map(next_dungeon_map, dungeon_config)
 
     # タイルマップとデータを更新
     update_tile_map(next_dungeon_map)
