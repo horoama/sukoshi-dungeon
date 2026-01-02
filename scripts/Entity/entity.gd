@@ -38,6 +38,7 @@ var map_data: MapData
 # コンポーネント（戦闘、インベントリなど）
 var fighter_component: FighterComponent
 var inventory_component: InventoryComponent
+var ai_component: BaseAIComponent
 
 
 # 初期化関数
@@ -76,6 +77,12 @@ func set_entity_type(key : String) -> void:
     if entity_definition.inventory_capacity > 0:
         inventory_component = InventoryComponent.new(entity_definition.inventory_capacity)
         add_child(inventory_component)
+
+    # AIコンポーネントの初期化（簡易実装）
+    # 将来的にはEntityDefinitionに含めるか、Factoryで生成する
+    if ai_type == AIType.HOSTILE:
+        ai_component = HostileEnemyAIComponent.new()
+        add_child(ai_component)
 
 
 # 指定されたオフセットだけ移動する関数

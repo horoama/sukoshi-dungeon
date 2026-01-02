@@ -165,8 +165,17 @@ func _on_turn_started(state: TurnManager.TurnState) -> void:
 
 # 敵のターン処理
 #
-# 現時点では即座にプレイヤーのターンに戻します。
+# マップ上の全ての敵対的なエンティティに対してAIを実行させます。
 func _process_enemy_turn() -> void:
-    # TODO: 敵の行動処理を実装
-    # 敵の行動が終わったらプレイヤーターンに戻す
+    var actors = current_dungeon_map.actors.values()
+    for actor in actors:
+        # プレイヤー自身はスキップ
+        if actor == player:
+            continue
+
+        # AIコンポーネントを持つエンティティのみ行動
+        if actor.ai_component:
+            actor.ai_component.perform(self, actor)
+
+    # 全ての敵の行動が終わったらプレイヤーターンに戻す
     turn_manager.change_state(TurnManager.TurnState.PLAYER_TURN)
