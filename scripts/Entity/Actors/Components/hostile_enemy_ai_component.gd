@@ -4,7 +4,7 @@ extends BaseAIComponent
 #
 # 状態を持ち、プレイヤーを発見すると追跡モードに切り替わります。
 
-enum State { WANDERING, HUNTING }
+enum State {WANDERING, HUNTING}
 
 const DIRECTIONS = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT]
 
