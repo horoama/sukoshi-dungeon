@@ -23,7 +23,7 @@ func perform(dungeon: Dungeon, entity: Entity) -> bool:
     if not target or not target.fighter_component:
         return false
 
-    var damage: int = entity.fighter_component.power - target.fighter_component.defense
+    var damage: int = max(0, entity.fighter_component.power - target.fighter_component.defense)
 
     var attack_desc: String = Enum.message_to_string(Enum.Message.ATTACK_DESCRIPTION) % [entity.name, target.name]
     var damage_desc: String

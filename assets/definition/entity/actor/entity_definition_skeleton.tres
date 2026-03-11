@@ -8,7 +8,7 @@
 script = ExtResource("1_kpgyd")
 max_hp = 5
 base_defense = 1
-base_power = 1
+base_power = 2
 metadata/_custom_type_script = "uid://bhyqm37wvdhwt"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_evanh"]
