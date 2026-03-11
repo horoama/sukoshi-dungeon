@@ -11,7 +11,7 @@ extends Resource
 @export var passable: bool = false
 @export var transparent: bool = true
 @export var type: Entity.EntityType
-
+@export var ai_type: Entity.AIType = Entity.AIType.NONE
 @export_category("Components")
 @export var fighter_definition: FighterComponentDefinition
 @export var consumable_definition: ConsumableComponentDefinition

@@ -17,17 +17,30 @@ var current_state: State = State.WANDERING
 func perform(dungeon: Dungeon, entity: Entity) -> void:
     # 視界チェックと状態更新
     if _can_see_player(dungeon, entity):
-        current_state = State.HUNTING
+        _change_state(State.HUNTING, entity)
     elif current_state == State.HUNTING:
         # プレイヤーを見失った場合（簡易的にWANDERINGに戻す）
         # 将来的には「最後の目撃地点」に行くなどの拡張が可能
-        current_state = State.WANDERING
+        _change_state(State.WANDERING, entity)
 
     match current_state:
         State.HUNTING:
             _perform_hunt(dungeon, entity)
         State.WANDERING:
             _perform_wander(dungeon, entity)
+
+# 状態を変更し、ログを出力する
+func _change_state(new_state: State, entity: Entity) -> void:
+    if current_state == new_state:
+        return
+        
+    match new_state:
+        State.HUNTING:
+            Loggie.debug("%s (AI) found the player! Switched to HUNTING state." % entity.entity_name)
+        State.WANDERING:
+            Loggie.debug("%s (AI) lost the player. Switched to WANDERING state." % entity.entity_name)
+            
+    current_state = new_state
 
 # プレイヤーが見えているかチェック
 func _can_see_player(dungeon: Dungeon, entity: Entity) -> bool:
@@ -61,7 +74,7 @@ func _perform_hunt(dungeon: Dungeon, entity: Entity) -> void:
 
     # 2. プレイヤーに近づく移動 (Greedy Pathfinding)
     var best_dir = Vector2i.ZERO
-    var min_dist = float("inf")
+    var min_dist = 100
     var valid_move_found = false
 
     # 候補の中から最もプレイヤーに近い位置を選出
@@ -71,8 +84,8 @@ func _perform_hunt(dungeon: Dungeon, entity: Entity) -> void:
         # 移動先が通行可能であることを確認（簡易チェック）
         # is_passableはアクターがいるとfalseを返すが、プレイヤー以外の敵がいる場合も避けたいのでこれでOK
         if not map_data.is_passable(next_pos):
-             continue
-
+            continue
+        # プレイヤーまでの距離を計算
         var dist = next_pos.distance_squared_to(player.grid_position)
         if dist < min_dist:
             min_dist = dist

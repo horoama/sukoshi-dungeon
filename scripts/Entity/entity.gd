@@ -69,6 +69,7 @@ func set_entity_type(key: String) -> void:
     passable = entity_definition.passable
     transparent = entity_definition.transparent
     entity_type = entity_definition.type
+    ai_type = entity_definition.ai_type
 
     # コンポーネントの初期化
     if entity_definition.fighter_definition:
