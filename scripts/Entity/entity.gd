@@ -11,9 +11,9 @@ enum EntityType {CORPSE, ITEM, ACTOR}
 # エンティティ定義リソースへのパスマッピング
 # TODO: これをFactoryクラスなどに分離することも検討
 const entity_types = {
-    "player" : "res://assets/definition/entity/actor/entity_definition_player.tres",
-    "rice_ball" : "res://assets/definition/entity/item/entity_definition_rice_ball.tres",
-    "skeleton" : "res://assets/definition/entity/actor/entity_definition_skeleton.tres",
+    "player": "res://assets/definition/entity/actor/entity_definition_player.tres",
+    "rice_ball": "res://assets/definition/entity/item/entity_definition_rice_ball.tres",
+    "skeleton": "res://assets/definition/entity/actor/entity_definition_skeleton.tres",
 }
 var key: String
 
@@ -27,8 +27,8 @@ var grid_position: Vector2i:
 
 var _definition: EntityDefinition
 var entity_name: String
-var passable : bool = false   # 通行可能かどうか（falseなら障害物）
-var transparent : bool = true # 視界を遮らないかどうか（trueなら透視可能）
+var passable: bool = false # 通行可能かどうか（falseなら障害物）
+var transparent: bool = true # 視界を遮らないかどうか（trueなら透視可能）
 var ai_type: AIType = AIType.NONE
 var entity_type: EntityType = EntityType.ACTOR
 
@@ -38,6 +38,7 @@ var map_data: MapData
 # コンポーネント（戦闘、インベントリなど）
 var fighter_component: FighterComponent
 var inventory_component: InventoryComponent
+var ai_component: BaseAIComponent
 
 
 # 初期化関数
@@ -51,14 +52,14 @@ func _init(map_data: MapData, grid_position: Vector2i, key: String) -> void:
     self.map_data = map_data
     self.grid_position = grid_position
     set_entity_type(key)
-    map_data.add_entity(grid_position, self)
+    map_data.add_entity(grid_position, self )
 
 # エンティティの種類を設定し、定義リソースからプロパティを読み込む関数
 #
 # 定義リソースに基づいて、名前、テクスチャ、通行可否、コンポーネントなどを設定します。
 #
 # @param key: エンティティの種類キー
-func set_entity_type(key : String) -> void:
+func set_entity_type(key: String) -> void:
     self.key = key
     var entity_definition: EntityDefinition = load(entity_types[key])
     _definition = entity_definition
@@ -68,6 +69,7 @@ func set_entity_type(key : String) -> void:
     passable = entity_definition.passable
     transparent = entity_definition.transparent
     entity_type = entity_definition.type
+    ai_type = entity_definition.ai_type
 
     # コンポーネントの初期化
     if entity_definition.fighter_definition:
@@ -76,6 +78,12 @@ func set_entity_type(key : String) -> void:
     if entity_definition.inventory_capacity > 0:
         inventory_component = InventoryComponent.new(entity_definition.inventory_capacity)
         add_child(inventory_component)
+
+    # AIコンポーネントの初期化（簡易実装）
+    # 将来的にはEntityDefinitionに含めるか、Factoryで生成する
+    if ai_type == AIType.HOSTILE:
+        ai_component = HostileEnemyAIComponent.new()
+        add_child(ai_component)
 
 
 # 指定されたオフセットだけ移動する関数
@@ -93,6 +101,6 @@ func move(offset: Vector2i) -> void:
         return
 
     # 移動処理：古い位置から削除し、新しい位置に追加
-    map_data.remove_entity(grid_position, self)
+    map_data.remove_entity(grid_position, self )
     grid_position += offset
-    map_data.add_entity(grid_position, self)
+    map_data.add_entity(grid_position, self )

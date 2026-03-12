@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="EntityDefinition" load_steps=6 format=3 uid="uid://1jltjvg1wne"]
+[gd_resource type="Resource" script_class="EntityDefinition" format=3 uid="uid://1jltjvg1wne"]
 
 [ext_resource type="Script" uid="uid://bhyqm37wvdhwt" path="res://scripts/Entity/Actors/Components/ComponentDefinitions/fighter_component_definition.gd" id="1_kpgyd"]
 [ext_resource type="Script" uid="uid://blaa73kgju8ys" path="res://scripts/Entity/entity_definition.gd" id="2_vfurq"]
@@ -8,7 +8,7 @@
 script = ExtResource("1_kpgyd")
 max_hp = 5
 base_defense = 1
-base_power = 1
+base_power = 2
 metadata/_custom_type_script = "uid://bhyqm37wvdhwt"
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_evanh"]
@@ -20,5 +20,6 @@ script = ExtResource("2_vfurq")
 name = "skeleton"
 texture = SubResource("AtlasTexture_evanh")
 type = 2
+ai_type = 1
 fighter_definition = SubResource("Resource_2yv8a")
 inventory_capacity = 10

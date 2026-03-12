@@ -1,6 +1,6 @@
-[gd_scene load_steps=0 format=3 uid="uid://c5t5uokm55rs4"]
+[gd_scene format=3 uid="uid://c5t5uokm55rs4"]
 
-[node name="InventoryUi" type="Control"]
+[node name="InventoryUi" type="Control" unique_id=143601080]
 layout_mode = 3
 anchors_preset = 8
 anchor_left = 0.5
@@ -10,7 +10,7 @@ anchor_bottom = 0.5
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="InventoryPanel" type="Panel" parent="."]
+[node name="InventoryPanel" type="Panel" parent="." unique_id=1154356356]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -24,7 +24,7 @@ offset_bottom = 288.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Title" type="Label" parent="InventoryPanel"]
+[node name="Title" type="Label" parent="InventoryPanel" unique_id=679621681]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
@@ -36,7 +36,7 @@ grow_horizontal = 2
 theme_override_font_sizes/font_size = 40
 text = "Inventory"
 
-[node name="ItemListBackground" type="ColorRect" parent="InventoryPanel"]
+[node name="ItemListBackground" type="ColorRect" parent="InventoryPanel" unique_id=1620727410]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -50,7 +50,7 @@ offset_bottom = 276.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ItemListContainer" type="VBoxContainer" parent="InventoryPanel/ItemListBackground"]
+[node name="ItemListContainer" type="VBoxContainer" parent="InventoryPanel/ItemListBackground" unique_id=264167283]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.26500002
