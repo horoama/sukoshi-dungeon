@@ -26,9 +26,11 @@ func _init(amount_text: String, color: Color) -> void:
     vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 
 func _ready() -> void:
-    # 基準位置を調整（エンティティの中心やや上からスタート）
-    # pivot_offset を設定して中心基準で配置されるようにする
-    position = Vector2(-20, -20) # Spriteの中心付近から少し上にオフセット
+    # エンティティは32x32ピクセルで左上原点 (centered=false)
+    # ラベルの幅をタイルサイズと同じにし、中央揃えを効かせる
+    custom_minimum_size = Vector2(32, 0)
+    # 基準位置を調整（タイルの左上から、Y軸のみ上にオフセット）
+    position = Vector2(0, -20)
 
     # Tweenを作成してアニメーションを実行
     var tween: Tween = create_tween()
