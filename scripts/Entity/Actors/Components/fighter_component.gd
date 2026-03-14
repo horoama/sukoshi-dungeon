@@ -38,6 +38,15 @@ func _init(_definition: FighterComponentDefinition) -> void:
     self.base_defense = _definition.base_defense
     self.base_power = _definition.base_power
 
+# ポップアップを生成して表示する処理
+#
+# @param text: 表示するテキスト
+# @param color: テキストの色
+func _show_popup(text: String, color: Color) -> void:
+    var popup: DamagePopup = DamagePopup.new(text, color)
+    entity.add_child(popup)
+
+
 # ダメージを受ける処理
 #
 # HPを減少させ、0以下になった場合の死亡ログなどを出力します。
@@ -45,6 +54,11 @@ func _init(_definition: FighterComponentDefinition) -> void:
 # @param amount: 受けるダメージ量
 func take_damage(amount: int) -> void:
     hp -= amount
+
+    # プレイヤーは赤、それ以外（敵）は白でポップアップを表示
+    var color: Color = Color.RED if entity.key == "player" else Color.WHITE
+    _show_popup(str(amount), color)
+
     Loggie.debug("Took " + str(amount) + " damage. HP: " + str(hp))
     if hp <= 0:
         hp = 0
@@ -64,7 +78,12 @@ func take_damage(amount: int) -> void:
 func heal(amount: int) -> int:
     var old_hp: int = hp
     hp += amount
-    var healed = hp - old_hp
+    var healed: int = hp - old_hp
+
+    # 回復時はマイナスで表記（色はプレイヤー/敵のルールを踏襲）
+    var color: Color = Color.RED if entity.key == "player" else Color.WHITE
+    _show_popup("-" + str(healed), color)
+
     Loggie.debug("Healed " + str(healed) + ". HP: " + str(hp))
     return healed
 
